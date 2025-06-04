@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,23 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Terminal colors
+				terminal: {
+					bg: '#1e1e1e',
+					border: '#3c3c3c',
+					text: '#d4d4d4',
+					green: '#4ec9b0',
+					blue: '#569cd6',
+					yellow: '#dcdcaa',
+					red: '#f44747',
+					purple: '#c586c0',
+					orange: '#ce9178'
 				}
+			},
+			fontFamily: {
+				mono: ['JetBrains Mono', 'Monaco', 'Consolas', 'monospace'],
+				sans: ['Inter', 'system-ui', 'sans-serif']
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +101,26 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'typing': {
+					'0%': { width: '0' },
+					'100%': { width: '100%' }
+				},
+				'blink': {
+					'0%, 50%': { opacity: '1' },
+					'51%, 100%': { opacity: '0' }
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0px)' },
+					'50%': { transform: 'translateY(-10px)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'typing': 'typing 3s steps(30, end) forwards',
+				'blink': 'blink 1s infinite',
+				'float': 'float 3s ease-in-out infinite'
 			}
 		}
 	},
