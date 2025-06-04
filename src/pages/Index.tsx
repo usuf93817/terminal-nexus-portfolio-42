@@ -7,6 +7,9 @@ import Services from '../components/Services';
 import Portfolio from '../components/Portfolio';
 import Contact from '../components/Contact';
 import AIAssistant from '../components/AIAssistant';
+import StatsSection from '../components/StatsSection';
+import ThreeJsShowcase from '../components/ThreeJsShowcase';
+import TechStack from '../components/TechStack';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -14,7 +17,14 @@ const Index = () => {
   const renderSection = () => {
     switch (activeSection) {
       case 'home':
-        return <Hero />;
+        return (
+          <>
+            <Hero />
+            <StatsSection />
+            <ThreeJsShowcase />
+            <TechStack />
+          </>
+        );
       case 'about':
         return <About />;
       case 'services':
@@ -26,7 +36,14 @@ const Index = () => {
       case 'ai-assistant':
         return <AIAssistant />;
       default:
-        return <Hero />;
+        return (
+          <>
+            <Hero />
+            <StatsSection />
+            <ThreeJsShowcase />
+            <TechStack />
+          </>
+        );
     }
   };
 
