@@ -1,143 +1,200 @@
 
 import React, { useState, useEffect } from 'react';
+import { Code, Database, Brain, Globe } from 'lucide-react';
 
 const Hero = () => {
   const [displayText, setDisplayText] = useState('');
-  const [currentLineIndex, setCurrentLineIndex] = useState(0);
-  const [currentCharIndex, setCurrentCharIndex] = useState(0);
-  const [showCursor, setShowCursor] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [loopNum, setLoopNum] = useState(0);
+  const [typingSpeed, setTypingSpeed] = useState(150);
 
-  const terminalLines = [
-    '$ initializing NodeXstation...',
-    '$ loading services: MERN, Three.js, Python, PHP...',
-    '$ connecting to AI agents...',
-    '$ Welcome to NodeXstation',
-    '$ Your gateway to innovative software solutions'
+  const textArray = [
+    'Welcome to NodeXstation',
+    'MERN Stack Developers',
+    'Three.js Specialists',
+    'AI Agent Builders',
+    'Data Scraping Experts'
   ];
 
   useEffect(() => {
-    const typewriter = setInterval(() => {
-      if (currentLineIndex < terminalLines.length) {
-        const currentLine = terminalLines[currentLineIndex];
-        
-        if (currentCharIndex < currentLine.length) {
-          setDisplayText(prev => prev + currentLine[currentCharIndex]);
-          setCurrentCharIndex(prev => prev + 1);
-        } else {
-          setDisplayText(prev => prev + '\n');
-          setCurrentLineIndex(prev => prev + 1);
-          setCurrentCharIndex(0);
-          
-          if (currentLineIndex === terminalLines.length - 1) {
-            clearInterval(typewriter);
-          } else {
-            setTimeout(() => {}, 500); // Pause between lines
-          }
-        }
+    const handleTyping = () => {
+      const current = loopNum % textArray.length;
+      const fullText = textArray[current];
+
+      setDisplayText(
+        isDeleting 
+          ? fullText.substring(0, currentIndex - 1)
+          : fullText.substring(0, currentIndex + 1)
+      );
+
+      setTypingSpeed(isDeleting ? 50 : 150);
+
+      if (!isDeleting && currentIndex === fullText.length) {
+        setTimeout(() => setIsDeleting(true), 1000);
+      } else if (isDeleting && currentIndex === 0) {
+        setIsDeleting(false);
+        setLoopNum(loopNum + 1);
       }
-    }, 100);
 
-    return () => clearInterval(typewriter);
-  }, [currentLineIndex, currentCharIndex]);
+      setCurrentIndex(isDeleting ? currentIndex - 1 : currentIndex + 1);
+    };
 
-  useEffect(() => {
-    const cursorBlink = setInterval(() => {
-      setShowCursor(prev => !prev);
-    }, 500);
-
-    return () => clearInterval(cursorBlink);
-  }, []);
+    const timer = setTimeout(handleTyping, typingSpeed);
+    return () => clearTimeout(timer);
+  }, [currentIndex, isDeleting, loopNum, typingSpeed, textArray]);
 
   const services = [
-    { name: 'MERN Stack', color: 'text-terminal-green' },
-    { name: 'Three.js', color: 'text-terminal-blue' },
-    { name: 'Python', color: 'text-terminal-yellow' },
-    { name: 'PHP', color: 'text-terminal-purple' },
-    { name: 'WordPress', color: 'text-terminal-orange' },
-    { name: 'AI Agents', color: 'text-terminal-green' },
-    { name: 'Data Scraping', color: 'text-terminal-blue' },
-    { name: 'Lead Generation', color: 'text-terminal-red' }
+    {
+      icon: Code,
+      name: 'MERN Stack',
+      description: 'Full-stack JavaScript development',
+      color: 'text-terminal-green'
+    },
+    {
+      icon: Globe,
+      name: 'Three.js',
+      description: '3D web experiences',
+      color: 'text-terminal-blue'
+    },
+    {
+      icon: Brain,
+      name: 'AI Agents',
+      description: 'Intelligent automation',
+      color: 'text-terminal-purple'
+    },
+    {
+      icon: Database,
+      name: 'Data Scraping',
+      description: 'Automated data extraction',
+      color: 'text-terminal-yellow'
+    }
   ];
 
   return (
-    <section className="min-h-screen flex items-center justify-center px-6 pt-20">
-      <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-        {/* Terminal Output */}
-        <div className="space-y-8">
-          <div className="bg-[#1e1e1e] rounded-lg border border-terminal-border p-6 font-mono">
-            <div className="flex items-center space-x-2 mb-4">
+    <section className="min-h-screen flex items-center justify-center relative overflow-hidden py-20 px-6">
+      {/* Animated Background Grid */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `
+            linear-gradient(rgba(78, 201, 176, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(78, 201, 176, 0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px',
+          animation: 'grid-move 20s linear infinite'
+        }}></div>
+      </div>
+
+      {/* Floating Particles */}
+      <div className="absolute inset-0 pointer-events-none">
+        {Array.from({ length: 30 }, (_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-terminal-green rounded-full opacity-60"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 2}s`
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="max-w-6xl mx-auto text-center relative z-10">
+        {/* Terminal Window */}
+        <div className="bg-[#1e1e1e] rounded-lg border border-terminal-border overflow-hidden mb-12 hover-glow">
+          {/* Terminal Header */}
+          <div className="flex items-center justify-between px-6 py-3 bg-[#323233] border-b border-terminal-border">
+            <div className="flex items-center space-x-2">
               <div className="flex space-x-1">
                 <div className="w-3 h-3 rounded-full bg-red-500"></div>
                 <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
               </div>
-              <span className="text-terminal-text text-sm">Terminal - NodeXstation</span>
+              <span className="text-terminal-text text-sm ml-4">terminal</span>
             </div>
-            
-            <div className="space-y-1">
-              {displayText.split('\n').map((line, index) => (
-                <div key={index} className="flex items-center">
-                  <span className="text-terminal-text">{line}</span>
-                  {index === displayText.split('\n').length - 1 && showCursor && (
-                    <div className="w-2 h-5 bg-terminal-green ml-1 animate-blink"></div>
-                  )}
-                </div>
-              ))}
-            </div>
+            <div className="text-terminal-text/60 text-xs">NodeXstation</div>
           </div>
 
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-terminal-text">
-              <span className="syntax-keyword">class</span>{' '}
-              <span className="syntax-function">NodeXstation</span>{' '}
-              <span className="syntax-keyword">extends</span>{' '}
-              <span className="syntax-variable">Innovation</span>
-            </h2>
-            <p className="text-terminal-text/80 text-lg leading-relaxed">
-              <span className="syntax-comment">/*</span><br />
-              <span className="syntax-comment"> * We craft cutting-edge digital solutions</span><br />
-              <span className="syntax-comment"> * Specializing in full-stack development,</span><br />
-              <span className="syntax-comment"> * AI integration, and data solutions</span><br />
-              <span className="syntax-comment"> */</span>
-            </p>
+          {/* Terminal Content */}
+          <div className="p-8">
+            <div className="terminal-line">
+              <span className="terminal-prompt">nodex@station:~$</span>
+              <span className="text-terminal-text font-mono">echo "</span>
+              <span className="text-terminal-green font-mono text-2xl md:text-4xl font-bold">
+                {displayText}
+                <span className="terminal-cursor"></span>
+              </span>
+              <span className="text-terminal-text font-mono">"</span>
+            </div>
+            
+            <div className="mt-6 text-left">
+              <div className="terminal-line">
+                <span className="terminal-prompt">nodex@station:~$</span>
+                <span className="text-terminal-text font-mono">cat services.json</span>
+              </div>
+              <div className="mt-2 pl-6">
+                <span className="syntax-comment">// Professional software development company</span><br />
+                <span className="syntax-keyword">const</span> <span className="syntax-variable">expertise</span> = [<br />
+                <span className="pl-4 syntax-string">"MERN Stack Development"</span>,<br />
+                <span className="pl-4 syntax-string">"Three.js 3D Experiences"</span>,<br />
+                <span className="pl-4 syntax-string">"AI Agent Development"</span>,<br />
+                <span className="pl-4 syntax-string">"Data Scraping & Automation"</span><br />
+                ];
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Services Grid */}
-        <div className="space-y-6">
-          <h3 className="text-xl font-semibold text-terminal-green">
-            <span className="syntax-keyword">const</span>{' '}
-            <span className="syntax-variable">services</span>{' '}
-            <span className="syntax-keyword">=</span> [
-          </h3>
-          
-          <div className="grid grid-cols-2 gap-4 pl-6">
-            {services.map((service, index) => (
-              <div
-                key={service.name}
-                className={`p-4 bg-terminal-bg/50 rounded-lg border border-terminal-border hover:border-terminal-green transition-all duration-300 hover:shadow-lg hover:shadow-terminal-green/20 animate-float`}
-                style={{ animationDelay: `${index * 0.2}s` }}
-              >
-                <span className="syntax-string">"</span>
-                <span className={service.color}>{service.name}</span>
-                <span className="syntax-string">",</span>
-              </div>
-            ))}
-          </div>
-          
-          <p className="text-terminal-text pl-0">
-            <span className="syntax-keyword">];</span>
-          </p>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {services.map((service, index) => (
+            <div
+              key={service.name}
+              className="bg-terminal-bg/50 border border-terminal-border rounded-lg p-6 hover:border-terminal-green transition-all duration-300 hover:scale-105 group"
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              <service.icon className={`w-8 h-8 ${service.color} mb-4 group-hover:scale-110 transition-transform`} />
+              <h3 className="text-terminal-text font-semibold mb-2">{service.name}</h3>
+              <p className="text-terminal-text/70 text-sm">{service.description}</p>
+            </div>
+          ))}
+        </div>
 
-          <div className="pt-6">
-            <button className="group bg-terminal-green text-terminal-bg px-8 py-3 rounded-lg font-semibold hover:bg-terminal-green/90 transition-all duration-300 hover:shadow-lg hover:shadow-terminal-green/30">
-              <span className="syntax-function">startProject</span>
-              <span className="syntax-keyword">()</span>
-              <span className="ml-2 group-hover:translate-x-1 transition-transform duration-300">→</span>
+        {/* Call to Action */}
+        <div className="space-y-6">
+          <p className="text-terminal-text/80 text-lg max-w-2xl mx-auto">
+            <span className="syntax-comment">/*</span><br />
+            <span className="syntax-comment"> * Transforming ideas into digital reality</span><br />
+            <span className="syntax-comment"> * Building the future, one line of code at a time</span><br />
+            <span className="syntax-comment"> */</span>
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button className="bg-terminal-green text-terminal-bg px-8 py-3 rounded-lg font-semibold hover:bg-terminal-green/90 transition-colors hover-scale">
+              <span className="syntax-function">exploreProjects</span>()
+            </button>
+            <button className="border border-terminal-green text-terminal-green px-8 py-3 rounded-lg font-semibold hover:bg-terminal-green/10 transition-colors hover-scale">
+              <span className="syntax-function">contactUs</span>()
             </button>
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes grid-move {
+          0% { transform: translate(0, 0); }
+          100% { transform: translate(50px, 50px); }
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) translateX(0px); }
+          25% { transform: translateY(-10px) translateX(5px); }
+          50% { transform: translateY(-5px) translateX(-5px); }
+          75% { transform: translateY(-15px) translateX(3px); }
+        }
+      `}</style>
     </section>
   );
 };

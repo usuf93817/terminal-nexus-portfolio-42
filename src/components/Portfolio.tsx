@@ -1,306 +1,386 @@
 
 import React, { useState } from 'react';
-import { Github, ArrowUp } from 'lucide-react';
+import { ExternalLink, Github, Eye, Code } from 'lucide-react';
 
 const Portfolio = () => {
-  const [activeProject, setActiveProject] = useState(0);
+  const [selectedProject, setSelectedProject] = useState(0);
+  const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
 
   const projects = [
     {
       id: 1,
-      name: 'E-Commerce MERN Platform',
-      description: 'Full-stack e-commerce solution with React frontend, Node.js backend, and MongoDB database',
-      technologies: ['React', 'Node.js', 'MongoDB', 'Express.js', 'Stripe', 'JWT'],
-      code: `const ecommerceApp = {
-  frontend: {
-    framework: "React",
-    state: "Redux Toolkit",
-    styling: "Tailwind CSS",
-    features: ["Product Catalog", "Shopping Cart", "User Auth"]
-  },
-  backend: {
-    runtime: "Node.js",
-    framework: "Express.js",
-    database: "MongoDB",
-    payment: "Stripe API"
-  },
-  deployment: "Vercel + Heroku"
-};`,
-      image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085',
-      category: 'Full-Stack',
-      status: 'Completed'
+      title: "E-Commerce Platform",
+      description: "Full-stack MERN application with React, Node.js, Express, and MongoDB",
+      technologies: ["React", "Node.js", "Express", "MongoDB", "Stripe"],
+      category: "MERN Stack",
+      preview: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop",
+      codeSnippet: `// User Authentication Middleware
+const authMiddleware = async (req, res, next) => {
+  try {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    if (!token) {
+      return res.status(401).json({ message: 'Access denied' });
+    }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: 'Invalid token' });
+  }
+};
+
+// Product Routes
+app.get('/api/products', async (req, res) => {
+  const products = await Product.find()
+    .populate('category')
+    .sort({ createdAt: -1 });
+  res.json(products);
+});`,
+      github: "https://github.com/nodexStation",
+      live: "#"
     },
     {
       id: 2,
-      name: '3D Product Visualizer',
-      description: 'Interactive 3D product showcase using Three.js with realistic lighting and materials',
-      technologies: ['Three.js', 'WebGL', 'React', 'GSAP', 'Blender'],
-      code: `const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+      title: "3D Product Visualizer",
+      description: "Interactive Three.js application for product customization and visualization",
+      technologies: ["Three.js", "React", "GSAP", "WebGL"],
+      category: "Three.js",
+      preview: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop",
+      codeSnippet: `// Three.js Scene Setup
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-// Load 3D model
-const loader = new THREE.GLTFLoader();
-loader.load('product.gltf', (gltf) => {
-  scene.add(gltf.scene);
-  animate();
-});`,
-      image: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7',
-      category: '3D Visualization',
-      status: 'In Progress'
+class ProductVisualizer {
+  constructor(container) {
+    this.container = container;
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(
+      75, window.innerWidth / window.innerHeight, 0.1, 1000
+    );
+    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.init();
+  }
+  
+  init() {
+    // Setup renderer
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.shadowMap.enabled = true;
+    this.container.appendChild(this.renderer.domElement);
+    
+    // Add lighting
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+    this.scene.add(ambientLight);
+    
+    // Add controls
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.animate();
+  }
+}`,
+      github: "https://github.com/nodexStation",
+      live: "#"
     },
     {
       id: 3,
-      name: 'AI Content Generator',
-      description: 'Intelligent content generation platform powered by OpenAI GPT with custom fine-tuning',
-      technologies: ['Python', 'OpenAI API', 'FastAPI', 'React', 'PostgreSQL'],
-      code: `import openai
-from fastapi import FastAPI
-from pydantic import BaseModel
+      title: "AI Customer Support Bot",
+      description: "Intelligent chatbot with natural language processing and machine learning",
+      technologies: ["Python", "OpenAI", "FastAPI", "React", "WebSocket"],
+      category: "AI Agent",
+      preview: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=600&fit=crop",
+      codeSnippet: `# AI Agent Implementation
+import openai
+from fastapi import FastAPI, WebSocket
+import asyncio
 
 app = FastAPI()
 
-class ContentRequest(BaseModel):
-    prompt: str
-    max_tokens: int = 500
+class CustomerSupportAgent:
+    def __init__(self):
+        self.client = openai.OpenAI()
+        self.conversation_history = []
+    
+    async def process_message(self, message: str) -> str:
+        """Process user message and generate AI response"""
+        try:
+            # Add user message to history
+            self.conversation_history.append({
+                "role": "user", 
+                "content": message
+            })
+            
+            # Generate AI response
+            response = await self.client.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": "You are a helpful customer support agent."},
+                    *self.conversation_history
+                ],
+                max_tokens=150,
+                temperature=0.7
+            )
+            
+            ai_message = response.choices[0].message.content
+            self.conversation_history.append({
+                "role": "assistant",
+                "content": ai_message
+            })
+            
+            return ai_message
+        except Exception as e:
+            return f"Error processing request: {str(e)}"
 
-@app.post("/generate")
-async def generate_content(request: ContentRequest):
-    response = openai.Completion.create(
-        engine="gpt-3.5-turbo",
-        prompt=request.prompt,
-        max_tokens=request.max_tokens
-    )
-    return {"content": response.choices[0].text}`,
-      image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6',
-      category: 'AI/ML',
-      status: 'Completed'
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    agent = CustomerSupportAgent()
+    
+    while True:
+        data = await websocket.receive_text()
+        response = await agent.process_message(data)
+        await websocket.send_text(response)`,
+      github: "https://github.com/nodexStation",
+      live: "#"
     },
     {
       id: 4,
-      name: 'WordPress Automation Suite',
-      description: 'Custom WordPress plugin suite for automated content management and SEO optimization',
-      technologies: ['PHP', 'WordPress', 'MySQL', 'JavaScript', 'REST API'],
-      code: `<?php
-/**
- * Plugin Name: NodeX Automation Suite
- * Description: Automated content management and SEO tools
- */
-
-class NodeXAutomation {
-    public function __construct() {
-        add_action('init', array($this, 'init'));
-        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
-    }
-    
-    public function init() {
-        // Initialize automation features
-        $this->setup_content_scheduler();
-        $this->setup_seo_optimizer();
-    }
-    
-    private function setup_content_scheduler() {
-        // Auto-publish scheduled content
-        wp_schedule_event(time(), 'hourly', 'nodex_auto_publish');
-    }
-}
-
-new NodeXAutomation();`,
-      image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b',
-      category: 'WordPress',
-      status: 'Completed'
-    },
-    {
-      id: 5,
-      name: 'Data Scraping Dashboard',
-      description: 'Real-time data collection and visualization dashboard for market intelligence',
-      technologies: ['Python', 'Scrapy', 'React', 'D3.js', 'Redis', 'Celery'],
-      code: `import scrapy
-from scrapy.crawler import CrawlerProcess
+      title: "Data Analytics Dashboard",
+      description: "Real-time data scraping and visualization platform with automated reporting",
+      technologies: ["Python", "Scrapy", "React", "D3.js", "PostgreSQL"],
+      category: "Data Scraping",
+      preview: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop",
+      codeSnippet: `# Advanced Web Scraping Pipeline
+import scrapy
 import pandas as pd
+from scrapy.crawler import CrawlerProcess
+import asyncio
 
-class MarketDataSpider(scrapy.Spider):
+class DataScrapingSpider(scrapy.Spider):
     name = 'market_data'
-    start_urls = ['https://example-market.com']
     
-    def parse(self, response):
-        for product in response.css('.product-item'):
-            yield {
-                'name': product.css('.product-name::text').get(),
-                'price': product.css('.price::text').get(),
-                'availability': product.css('.stock::text').get(),
-                'timestamp': datetime.now()
-            }
-            
-    def save_to_database(self, data):
-        df = pd.DataFrame(data)
-        df.to_sql('market_data', engine, if_exists='append')`,
-      image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5',
-      category: 'Data Science',
-      status: 'In Progress'
+    def __init__(self, target_urls=None):
+        self.target_urls = target_urls or []
+        self.scraped_data = []
+    
+    def start_requests(self):
+        for url in self.target_urls:
+            yield scrapy.Request(
+                url=url,
+                callback=self.parse_data,
+                meta={'dont_cache': True}
+            )
+    
+    def parse_data(self, response):
+        """Extract structured data from web pages"""
+        data = {
+            'title': response.css('h1::text').get(),
+            'price': response.css('.price::text').re_first(r'\\$([\\d,]+)'),
+            'description': response.css('.description::text').getall(),
+            'ratings': response.css('.rating::text').get(),
+            'availability': response.css('.stock::text').get(),
+            'url': response.url,
+            'scraped_at': pd.Timestamp.now()
+        }
+        
+        # Data cleaning and validation
+        if self.validate_data(data):
+            self.scraped_data.append(data)
+            yield data
+    
+    def validate_data(self, data):
+        """Validate scraped data quality"""
+        required_fields = ['title', 'price']
+        return all(data.get(field) for field in required_fields)
+
+# Async data processing
+async def process_scraped_data(data_batch):
+    """Process and store scraped data"""
+    df = pd.DataFrame(data_batch)
+    
+    # Data transformation
+    df['price_numeric'] = df['price'].str.replace(',', '').astype(float)
+    df['category'] = df['title'].apply(classify_product)
+    
+    # Store in database
+    await store_to_database(df)`,
+      github: "https://github.com/nodexStation",
+      live: "#"
     }
   ];
 
-  const categories = ['All', 'Full-Stack', '3D Visualization', 'AI/ML', 'WordPress', 'Data Science'];
-  const [activeCategory, setActiveCategory] = useState('All');
+  const categories = ["All", "MERN Stack", "Three.js", "AI Agent", "Data Scraping"];
+  const [activeCategory, setActiveCategory] = useState("All");
 
-  const filteredProjects = activeCategory === 'All' 
+  const filteredProjects = activeCategory === "All" 
     ? projects 
     : projects.filter(project => project.category === activeCategory);
 
   return (
     <section className="min-h-screen py-20 px-6">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Section Header */}
-        <div className="mb-16">
+        <div className="mb-12">
           <h2 className="text-4xl font-bold text-terminal-green mb-6">
-            <span className="syntax-keyword">const</span> <span className="syntax-variable">portfolio</span> = [
+            <span className="syntax-keyword">class</span> <span className="syntax-function">Portfolio</span> {"{"}
           </h2>
-          <p className="text-terminal-text/80 text-lg max-w-3xl pl-6">
+          <p className="text-terminal-text/80 text-lg pl-6">
             <span className="syntax-comment">/*</span><br />
-            <span className="syntax-comment"> * Showcase of our recent projects and technical achievements.</span><br />
-            <span className="syntax-comment"> * Each project demonstrates our expertise and innovation.</span><br />
+            <span className="syntax-comment"> * Showcase of our innovative projects and technical expertise</span><br />
+            <span className="syntax-comment"> * Each project represents cutting-edge solutions</span><br />
             <span className="syntax-comment"> */</span>
           </p>
         </div>
 
         {/* Category Filter */}
-        <div className="mb-12 pl-6">
-          <div className="flex flex-wrap gap-3">
+        <div className="mb-8">
+          <div className="flex flex-wrap gap-2">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setActiveCategory(category)}
-                className={`px-4 py-2 rounded-lg text-sm font-mono transition-all duration-300 ${
+                className={`px-4 py-2 rounded-lg font-mono text-sm transition-all ${
                   activeCategory === category
                     ? 'bg-terminal-green text-terminal-bg'
-                    : 'bg-terminal-bg/50 text-terminal-text border border-terminal-border hover:border-terminal-green hover:text-terminal-green'
+                    : 'bg-terminal-bg border border-terminal-border text-terminal-text hover:border-terminal-green'
                 }`}
               >
-                <span className="syntax-string">"{category}"</span>
+                {category}
               </button>
             ))}
           </div>
         </div>
 
         {/* Projects Grid */}
-        <div className="space-y-12 pl-6">
-          {filteredProjects.map((project, index) => (
-            <div
-              key={project.id}
-              className="grid lg:grid-cols-2 gap-8 bg-terminal-bg/50 rounded-lg border border-terminal-border p-8 hover:border-terminal-green transition-all duration-300 hover:shadow-lg hover:shadow-terminal-green/20"
-            >
-              {/* Project Info */}
-              <div className="space-y-6">
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-2xl font-semibold text-terminal-text">
-                      <span className="syntax-variable">{project.name}</span>
+        <div className="grid lg:grid-cols-2 gap-8 mb-12">
+          {/* Project List */}
+          <div className="space-y-4">
+            {filteredProjects.map((project, index) => (
+              <div
+                key={project.id}
+                onClick={() => setSelectedProject(index)}
+                className={`bg-terminal-bg/50 border rounded-lg p-6 cursor-pointer transition-all hover:scale-105 ${
+                  selectedProject === index
+                    ? 'border-terminal-green glow-effect'
+                    : 'border-terminal-border hover:border-terminal-green/50'
+                }`}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-xl font-semibold text-terminal-text mb-2">
+                      {project.title}
                     </h3>
-                    <span className={`px-3 py-1 rounded-full text-xs font-mono ${
-                      project.status === 'Completed' 
-                        ? 'bg-terminal-green/20 text-terminal-green border border-terminal-green/30'
-                        : 'bg-terminal-yellow/20 text-terminal-yellow border border-terminal-yellow/30'
-                    }`}>
-                      {project.status}
+                    <span className="text-terminal-green text-sm bg-terminal-green/10 px-2 py-1 rounded">
+                      {project.category}
                     </span>
                   </div>
-                  <p className="text-terminal-blue text-sm font-mono mb-2">
-                    <span className="syntax-keyword">category:</span> <span className="syntax-string">"{project.category}"</span>
-                  </p>
-                  <p className="text-terminal-text/80 leading-relaxed">
-                    <span className="syntax-comment">// {project.description}</span>
-                  </p>
-                </div>
-
-                {/* Technologies */}
-                <div>
-                  <p className="text-terminal-yellow text-sm mb-3">
-                    <span className="syntax-variable">technologies</span>: [
-                  </p>
-                  <div className="pl-4 flex flex-wrap gap-2">
-                    {project.technologies.map((tech) => (
-                      <span
-                        key={tech}
-                        className="bg-terminal-border/50 text-terminal-text px-3 py-1 rounded text-sm font-mono border border-terminal-border hover:border-terminal-green transition-colors"
-                      >
-                        <span className="syntax-string">"{tech}"</span>
-                      </span>
-                    ))}
+                  <div className="flex space-x-2">
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-terminal-text/60 hover:text-terminal-green transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Github className="w-5 h-5" />
+                    </a>
+                    <a
+                      href={project.live}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-terminal-text/60 hover:text-terminal-green transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <ExternalLink className="w-5 h-5" />
+                    </a>
                   </div>
-                  <p className="text-terminal-yellow text-sm mt-3">]</p>
                 </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-4">
-                  <button className="flex items-center space-x-2 bg-terminal-green text-terminal-bg px-6 py-2 rounded-lg font-semibold hover:bg-terminal-green/90 transition-all duration-300">
-                    <Github size={16} />
-                    <span>View Code</span>
-                  </button>
-                  <button className="flex items-center space-x-2 border border-terminal-green text-terminal-green px-6 py-2 rounded-lg font-semibold hover:bg-terminal-green/10 transition-all duration-300">
-                    <ArrowUp size={16} className="rotate-45" />
-                    <span>Live Demo</span>
-                  </button>
+                
+                <p className="text-terminal-text/70 mb-4">{project.description}</p>
+                
+                <div className="flex flex-wrap gap-2">
+                  {project.technologies.map((tech) => (
+                    <span
+                      key={tech}
+                      className="text-xs bg-terminal-border text-terminal-text px-2 py-1 rounded"
+                    >
+                      {tech}
+                    </span>
+                  ))}
                 </div>
               </div>
+            ))}
+          </div>
 
-              {/* Code Preview */}
-              <div className="space-y-4">
-                <div className="bg-[#1e1e1e] rounded-lg border border-terminal-border overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-2 bg-[#323233] border-b border-terminal-border">
-                    <div className="flex space-x-1">
-                      <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                      <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                    </div>
-                    <span className="text-terminal-text text-xs">
-                      {project.name.toLowerCase().replace(/\s+/g, '-')}.js
-                    </span>
-                  </div>
-                  <div className="p-4 overflow-x-auto">
-                    <pre className="text-sm">
-                      <code className="text-terminal-text whitespace-pre-wrap">
-                        {project.code}
-                      </code>
-                    </pre>
-                  </div>
+          {/* Project Preview */}
+          <div className="bg-[#1e1e1e] rounded-lg border border-terminal-border overflow-hidden">
+            {/* Preview Header */}
+            <div className="flex items-center justify-between px-6 py-3 bg-[#323233] border-b border-terminal-border">
+              <div className="flex items-center space-x-2">
+                <div className="flex space-x-1">
+                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
                 </div>
-
-                {/* Project Image */}
-                <div className="rounded-lg overflow-hidden border border-terminal-border">
-                  <img
-                    src={project.image}
-                    alt={project.name}
-                    className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
+                <span className="text-terminal-text text-sm ml-4">
+                  {filteredProjects[selectedProject]?.title}
+                </span>
+              </div>
+              
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setViewMode('preview')}
+                  className={`p-1 rounded transition-colors ${
+                    viewMode === 'preview'
+                      ? 'bg-terminal-green text-terminal-bg'
+                      : 'text-terminal-text/60 hover:text-terminal-text'
+                  }`}
+                >
+                  <Eye className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('code')}
+                  className={`p-1 rounded transition-colors ${
+                    viewMode === 'code'
+                      ? 'bg-terminal-green text-terminal-bg'
+                      : 'text-terminal-text/60 hover:text-terminal-text'
+                  }`}
+                >
+                  <Code className="w-4 h-4" />
+                </button>
               </div>
             </div>
-          ))}
+
+            {/* Preview Content */}
+            <div className="h-96">
+              {viewMode === 'preview' ? (
+                <div 
+                  className="w-full h-full bg-cover bg-center"
+                  style={{ backgroundImage: `url(${filteredProjects[selectedProject]?.preview})` }}
+                >
+                  <div className="w-full h-full bg-black/20 flex items-center justify-center">
+                    <div className="text-center text-white">
+                      <h3 className="text-2xl font-bold mb-2">
+                        {filteredProjects[selectedProject]?.title}
+                      </h3>
+                      <p className="text-white/80">
+                        {filteredProjects[selectedProject]?.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-6 h-full overflow-y-auto">
+                  <pre className="text-sm text-terminal-text font-mono leading-relaxed">
+                    <code className="language-javascript">
+                      {filteredProjects[selectedProject]?.codeSnippet}
+                    </code>
+                  </pre>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        <p className="text-terminal-green text-4xl font-bold mt-8">];</p>
-
-        {/* GitHub CTA */}
-        <div className="mt-16 bg-[#1e1e1e] rounded-lg border border-terminal-border p-8 text-center">
-          <h3 className="text-2xl font-semibold text-terminal-green mb-4">
-            <span className="syntax-keyword">explore</span> <span className="syntax-function">moreProjects</span>()
-          </h3>
-          <p className="text-terminal-text/80 mb-6">
-            <span className="syntax-comment">
-              // Visit our GitHub for more open-source projects and contributions
-            </span>
-          </p>
-          <a
-            href="https://github.com/nodexStation"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center space-x-2 bg-terminal-green text-terminal-bg px-8 py-3 rounded-lg font-semibold hover:bg-terminal-green/90 transition-all duration-300 hover:shadow-lg hover:shadow-terminal-green/30"
-          >
-            <Github size={20} />
-            <span>View GitHub</span>
-          </a>
-        </div>
+        <p className="text-terminal-green text-4xl font-bold">{"}"}</p>
       </div>
     </section>
   );
