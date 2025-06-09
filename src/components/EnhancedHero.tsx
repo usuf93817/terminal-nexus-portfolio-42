@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { ChevronDown, Code, Zap, Globe } from 'lucide-react';
 import { gsap } from 'gsap';
@@ -47,18 +46,24 @@ const EnhancedHero = () => {
       stagger: 0.5
     });
 
-    // Typing effect
+    // Simple typing effect without TextPlugin
     if (codeRef.current) {
       const codeText = codeRef.current;
-      const text = codeText.textContent || '';
+      const text = `// Crafting digital experiences with modern web technologies
+// Specialized in React, TypeScript, and cutting-edge animations
+// Passionate about creating performant, beautiful applications`;
       codeText.textContent = '';
       
-      gsap.to(codeText, {
-        duration: 2,
-        text: text,
-        ease: "none",
-        delay: 1
-      });
+      let i = 0;
+      const typeWriter = () => {
+        if (i < text.length) {
+          codeText.textContent += text.charAt(i);
+          i++;
+          setTimeout(typeWriter, 30);
+        }
+      };
+      
+      setTimeout(typeWriter, 1000);
     }
 
     // Particles canvas animation
@@ -172,9 +177,6 @@ const EnhancedHero = () => {
           <div className="hero-description max-w-3xl mx-auto space-y-4 text-terminal-text/70 text-lg">
             <div className="font-mono text-left bg-terminal-bg/50 rounded-lg p-6 border border-terminal-border">
               <div ref={codeRef} className="syntax-comment">
-                // Crafting digital experiences with modern web technologies
-                // Specialized in React, TypeScript, and cutting-edge animations
-                // Passionate about creating performant, beautiful applications
               </div>
             </div>
           </div>
