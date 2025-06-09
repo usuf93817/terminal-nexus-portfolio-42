@@ -10,6 +10,7 @@ interface FloatingNavProps {
 const FloatingNav: React.FC<FloatingNavProps> = ({ activeSection, setActiveSection }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   const navItems = [
     { id: 'home', icon: Home, label: 'Home' },
@@ -24,23 +25,23 @@ const FloatingNav: React.FC<FloatingNavProps> = ({ activeSection, setActiveSecti
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = scrollTop / docHeight;
+      const progress = Math.min(scrollTop / docHeight, 1);
       setScrollProgress(progress);
       setIsVisible(scrollTop > 200);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
-    <div className={`fixed right-6 top-1/2 transform -translate-y-1/2 z-50 transition-all duration-500 ${
+    <div className={`fixed right-6 top-1/2 transform -translate-y-1/2 z-50 transition-all duration-700 ease-out ${
       isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-20'
     }`}>
-      {/* Scroll Progress */}
+      {/* Enhanced Scroll Progress */}
       <div className="absolute left-0 top-0 w-0.5 h-full bg-terminal-border rounded-full overflow-hidden">
         <div 
-          className="w-full bg-gradient-to-b from-terminal-green to-terminal-blue transition-all duration-300"
+          className="w-full bg-gradient-to-b from-terminal-green via-terminal-blue to-terminal-purple transition-all duration-500 ease-out"
           style={{ height: `${scrollProgress * 100}%` }}
         />
       </div>
@@ -51,25 +52,40 @@ const FloatingNav: React.FC<FloatingNavProps> = ({ activeSection, setActiveSecti
           <button
             key={item.id}
             onClick={() => setActiveSection(item.id)}
-            className={`group relative w-12 h-12 rounded-full border transition-all duration-300 hover:scale-110 ${
+            onMouseEnter={() => setHoveredItem(item.id)}
+            onMouseLeave={() => setHoveredItem(null)}
+            className={`group relative w-12 h-12 rounded-full border transition-all duration-500 ease-out transform will-change-transform ${
               activeSection === item.id
-                ? 'bg-terminal-green border-terminal-green text-terminal-bg'
-                : 'bg-terminal-bg/80 border-terminal-border text-terminal-text hover:border-terminal-green backdrop-blur-sm'
-            }`}
-            style={{ animationDelay: `${index * 0.1}s` }}
+                ? 'bg-terminal-green border-terminal-green text-terminal-bg scale-110 shadow-lg shadow-terminal-green/30'
+                : 'bg-terminal-bg/90 border-terminal-border text-terminal-text hover:border-terminal-green backdrop-blur-sm hover:scale-110 hover:shadow-lg hover:shadow-terminal-green/20'
+            } ${hoveredItem === item.id ? 'z-10' : ''}`}
+            style={{ 
+              animationDelay: `${index * 0.1}s`,
+              transform: hoveredItem === item.id ? 'scale(1.15)' : activeSection === item.id ? 'scale(1.1)' : 'scale(1)'
+            }}
           >
-            <item.icon className="w-5 h-5 mx-auto" />
+            <item.icon className="w-5 h-5 mx-auto transition-transform duration-300" />
             
-            {/* Tooltip */}
-            <div className="absolute right-16 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
-              <div className="bg-terminal-bg border border-terminal-border rounded-lg px-3 py-2 text-sm font-mono whitespace-nowrap">
+            {/* Enhanced Tooltip */}
+            <div className={`absolute right-16 top-1/2 transform -translate-y-1/2 transition-all duration-500 pointer-events-none ${
+              hoveredItem === item.id ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 translate-x-4 scale-95'
+            }`}>
+              <div className="bg-terminal-bg/95 border border-terminal-border rounded-lg px-4 py-2 text-sm font-mono whitespace-nowrap backdrop-blur-sm shadow-xl">
                 {item.label}
                 <div className="absolute left-full top-1/2 transform -translate-y-1/2 border-4 border-transparent border-l-terminal-border"></div>
               </div>
             </div>
+
+            {/* Ripple effect */}
+            <div className={`absolute inset-0 rounded-full bg-terminal-green/20 scale-0 transition-transform duration-300 ${
+              activeSection === item.id ? 'animate-ping' : ''
+            }`} />
           </button>
         ))}
       </div>
+
+      {/* Floating background glow */}
+      <div className="absolute inset-0 bg-gradient-to-r from-terminal-green/5 to-terminal-blue/5 rounded-full blur-xl -z-10 animate-pulse" />
     </div>
   );
 };
