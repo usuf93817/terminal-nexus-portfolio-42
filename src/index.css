@@ -54,139 +54,121 @@
   body {
     @apply bg-terminal-bg text-terminal-text font-mono;
     background: linear-gradient(135deg, #1e1e1e 0%, #252526 100%);
-    will-change: transform;
-  }
-
-  /* Enhanced smooth scrolling */
-  html {
-    scroll-behavior: smooth;
   }
 
   /* Enhanced Scrollbar styling */
   ::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
   }
 
   ::-webkit-scrollbar-track {
     background: #2d2d30;
-    border-radius: 6px;
+    border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb {
     background: linear-gradient(45deg, #4ec9b0, #569cd6);
-    border-radius: 6px;
-    transition: all 0.3s ease;
+    border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(45deg, #5fd4bb, #6ba7e1);
-    transform: scale(1.1);
   }
 
   /* Enhanced Code syntax highlighting */
   .syntax-keyword {
     @apply text-terminal-purple font-semibold;
-    text-shadow: 0 0 10px rgba(197, 134, 192, 0.3);
   }
 
   .syntax-string {
     @apply text-terminal-orange;
-    text-shadow: 0 0 8px rgba(206, 145, 120, 0.3);
   }
 
   .syntax-function {
     @apply text-terminal-yellow font-semibold;
-    text-shadow: 0 0 8px rgba(220, 220, 170, 0.3);
   }
 
   .syntax-comment {
     @apply text-terminal-green italic;
-    text-shadow: 0 0 6px rgba(78, 201, 176, 0.3);
   }
 
   .syntax-variable {
     @apply text-terminal-blue;
-    text-shadow: 0 0 6px rgba(86, 156, 214, 0.3);
   }
 
   /* Enhanced Terminal animation styles */
   .terminal-line {
     @apply flex items-center space-x-2 mb-2;
-    animation: slideInLeft 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+    animation: slideInLeft 0.5s ease-out;
   }
 
   .terminal-prompt {
     @apply text-terminal-green;
-    text-shadow: 0 0 10px rgba(78, 201, 176, 0.5);
   }
 
   .terminal-cursor {
     @apply inline-block w-2 h-5 bg-terminal-green;
-    animation: blink 1.2s ease-in-out infinite;
-    box-shadow: 0 0 10px rgba(78, 201, 176, 0.8);
+    animation: blink 1s infinite;
   }
 
   /* Enhanced Glowing effects */
   .glow-effect {
     box-shadow: 
-      0 0 25px rgba(78, 201, 176, 0.4),
-      0 0 50px rgba(78, 201, 176, 0.2),
-      inset 0 0 25px rgba(78, 201, 176, 0.1);
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      0 0 20px rgba(78, 201, 176, 0.3),
+      0 0 40px rgba(78, 201, 176, 0.1),
+      inset 0 0 20px rgba(78, 201, 176, 0.05);
   }
 
   .hover-glow:hover {
     box-shadow: 
-      0 0 35px rgba(78, 201, 176, 0.6),
-      0 0 70px rgba(78, 201, 176, 0.3),
-      inset 0 0 35px rgba(78, 201, 176, 0.15);
-    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      0 0 25px rgba(78, 201, 176, 0.4),
+      0 0 50px rgba(78, 201, 176, 0.2),
+      inset 0 0 25px rgba(78, 201, 176, 0.1);
+    transition: box-shadow 0.3s ease;
   }
 
-  /* Enhanced hover effects */
+  /* New advanced animations */
   .hover-scale:hover {
-    transform: scale(1.05) translateY(-2px);
-    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transform: scale(1.05);
+    transition: transform 0.2s ease;
   }
 
   .pulse-glow {
-    animation: pulseGlow 3s ease-in-out infinite alternate;
+    animation: pulseGlow 2s ease-in-out infinite alternate;
   }
 
-  /* Enhanced Matrix-style text effects */
+  /* Matrix-style text effects */
   .matrix-text {
-    background: linear-gradient(45deg, #4ec9b0, #569cd6, #c586c0, #dcdcaa);
-    background-size: 600% 600%;
+    background: linear-gradient(45deg, #4ec9b0, #569cd6, #c586c0);
+    background-size: 400% 400%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: gradientShift 4s ease infinite;
+    animation: gradientShift 3s ease infinite;
   }
 
-  /* Enhanced Particle animation */
+  /* Particle animation */
   .particle {
     position: absolute;
-    background: radial-gradient(circle, #4ec9b0, transparent);
+    background: #4ec9b0;
     border-radius: 50%;
     pointer-events: none;
-    animation: particleFloat 8s ease-in-out infinite;
-    will-change: transform;
+    animation: particleFloat 6s ease-in-out infinite;
   }
 
-  /* Enhanced Loading skeleton effect */
+  /* Loading skeleton effect */
   .skeleton {
     background: linear-gradient(90deg, #2d2d30 25%, #3c3c3c 50%, #2d2d30 75%);
-    background-size: 400% 100%;
-    animation: shimmer 2.5s infinite;
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
   }
 
-  /* Enhanced Code block styling */
+  /* Code block styling */
   .code-block {
     background: #1e1e1e;
     border: 1px solid #3c3c3c;
-    border-radius: 12px;
+    border-radius: 8px;
     position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
   }
 
   .code-block::before {
@@ -195,29 +177,27 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #4ec9b0, #569cd6, transparent);
-    animation: scanLine 4s ease-in-out infinite;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #4ec9b0, transparent);
+    animation: scanLine 3s ease-in-out infinite;
   }
 
-  /* Enhanced Terminal window styling */
+  /* Terminal window styling */
   .terminal-window {
     background: #1e1e1e;
-    border-radius: 12px;
+    border-radius: 8px;
     box-shadow: 
-      0 25px 60px rgba(0, 0, 0, 0.5),
-      0 0 0 1px rgba(78, 201, 176, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      0 20px 50px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(78, 201, 176, 0.1);
   }
 
   /* Enhanced button styles */
   .btn-terminal {
-    @apply bg-terminal-green text-terminal-bg px-8 py-4 rounded-lg font-mono font-semibold;
-    background: linear-gradient(135deg, #4ec9b0, #5fd4bb);
-    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    @apply bg-terminal-green text-terminal-bg px-6 py-3 rounded-lg font-mono font-semibold;
+    background: linear-gradient(45deg, #4ec9b0, #5fd4bb);
+    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(78, 201, 176, 0.3);
   }
 
   .btn-terminal::before {
@@ -227,8 +207,8 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    transition: left 0.6s ease;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
   }
 
   .btn-terminal:hover::before {
@@ -236,49 +216,27 @@
   }
 
   .btn-terminal:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 
-      0 8px 25px rgba(78, 201, 176, 0.4),
-      0 0 20px rgba(78, 201, 176, 0.2);
-  }
-
-  /* Smooth transitions for all interactive elements */
-  .smooth-transition {
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  }
-
-  /* Enhanced focus styles */
-  *:focus {
-    outline: 2px solid rgba(78, 201, 176, 0.6);
-    outline-offset: 2px;
-    border-radius: 4px;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(78, 201, 176, 0.3);
   }
 }
 
-/* Enhanced Keyframe animations */
+/* Keyframe animations */
 @keyframes blink {
   0%, 50% { opacity: 1; }
   51%, 100% { opacity: 0; }
 }
 
 @keyframes float {
-  0%, 100% { 
-    transform: translateY(0px) translateX(0px) rotate(0deg); 
-  }
-  25% { 
-    transform: translateY(-15px) translateX(8px) rotate(5deg); 
-  }
-  50% { 
-    transform: translateY(-8px) translateX(-8px) rotate(-3deg); 
-  }
-  75% { 
-    transform: translateY(-20px) translateX(5px) rotate(7deg); 
-  }
+  0%, 100% { transform: translateY(0px) translateX(0px); }
+  25% { transform: translateY(-10px) translateX(5px); }
+  50% { transform: translateY(-5px) translateX(-5px); }
+  75% { transform: translateY(-15px) translateX(3px); }
 }
 
 @keyframes slideInLeft {
   from {
-    transform: translateX(-30px);
+    transform: translateX(-20px);
     opacity: 0;
   }
   to {
@@ -289,10 +247,10 @@
 
 @keyframes pulseGlow {
   from {
-    box-shadow: 0 0 25px rgba(78, 201, 176, 0.4);
+    box-shadow: 0 0 20px rgba(78, 201, 176, 0.4);
   }
   to {
-    box-shadow: 0 0 40px rgba(78, 201, 176, 0.8);
+    box-shadow: 0 0 30px rgba(78, 201, 176, 0.6);
   }
 }
 
@@ -304,26 +262,26 @@
 
 @keyframes particleFloat {
   0%, 100% {
-    transform: translateY(0px) rotate(0deg) scale(1);
+    transform: translateY(0px) rotate(0deg);
     opacity: 1;
   }
   25% {
-    transform: translateY(-25px) rotate(90deg) scale(1.1);
+    transform: translateY(-20px) rotate(90deg);
     opacity: 0.8;
   }
   50% {
-    transform: translateY(-15px) rotate(180deg) scale(0.9);
+    transform: translateY(-10px) rotate(180deg);
     opacity: 0.6;
   }
   75% {
-    transform: translateY(-35px) rotate(270deg) scale(1.2);
+    transform: translateY(-30px) rotate(270deg);
     opacity: 0.8;
   }
 }
 
 @keyframes shimmer {
-  0% { background-position: -400% 0; }
-  100% { background-position: 400% 0; }
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @keyframes scanLine {
@@ -332,35 +290,31 @@
     opacity: 0;
   }
   50% {
-    transform: translateX(100%);
+    transform: translateX(0%);
     opacity: 1;
   }
 }
 
-/* Enhanced responsive design */
+/* Responsive typography */
 @media (max-width: 768px) {
   .terminal-line {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.5rem;
+    space-x: 0;
   }
   
   .terminal-prompt {
     margin-bottom: 0.25rem;
   }
-
-  .btn-terminal {
-    @apply px-6 py-3 text-sm;
-  }
 }
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-  .syntax-keyword { @apply text-blue-300; }
-  .syntax-string { @apply text-yellow-300; }
-  .syntax-function { @apply text-green-300; }
-  .syntax-comment { @apply text-gray-300; }
-  .syntax-variable { @apply text-cyan-300; }
+  .syntax-keyword { @apply text-blue-400; }
+  .syntax-string { @apply text-yellow-400; }
+  .syntax-function { @apply text-green-400; }
+  .syntax-comment { @apply text-gray-400; }
+  .syntax-variable { @apply text-cyan-400; }
 }
 
 /* Reduced motion support */
@@ -369,19 +323,5 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-  
-  .smooth-transition {
-    transition: none !important;
-  }
-}
-
-/* Dark mode enhancements */
-@media (prefers-color-scheme: dark) {
-  .glow-effect {
-    box-shadow: 
-      0 0 30px rgba(78, 201, 176, 0.5),
-      0 0 60px rgba(78, 201, 176, 0.2),
-      inset 0 0 30px rgba(78, 201, 176, 0.1);
   }
 }

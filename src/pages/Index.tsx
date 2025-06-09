@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
-import EnhancedHero from '../components/EnhancedHero';
+import Hero from '../components/Hero';
 import About from '../components/About';
 import Services from '../components/Services';
 import Portfolio from '../components/Portfolio';
@@ -14,12 +14,7 @@ import FloatingNav from '../components/FloatingNav';
 import MagneticCursor from '../components/MagneticCursor';
 import LoadingScreen from '../components/LoadingScreen';
 import ParticleBackground from '../components/ParticleBackground';
-import GSAPAnimations from '../components/GSAPAnimations';
-import { gsap } from 'gsap';
-import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
-
-// Register GSAP plugins
-gsap.registerPlugin(ScrollToPlugin);
+import ScrollReveal from '../components/ScrollReveal';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -27,49 +22,22 @@ const Index = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Enhanced smooth scrolling with GSAP
+    // Smooth scrolling
     const style = document.createElement('style');
     style.textContent = `
-      html { 
-        scroll-behavior: smooth; 
-      }
-      body { 
-        cursor: none;
-        overflow-x: hidden;
-      }
-      
-      /* Enhanced animations */
-      .gsap-fade-up {
-        opacity: 0;
-        transform: translateY(50px);
-      }
-      
-      .smooth-transition {
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-      }
+      html { scroll-behavior: smooth; }
+      body { cursor: none; }
     `;
     document.head.appendChild(style);
 
     return () => {
-      if (document.head.contains(style)) {
-        document.head.removeChild(style);
-      }
+      document.head.removeChild(style);
     };
   }, []);
 
   const handleLoadingComplete = () => {
     setIsLoading(false);
-    
-    // Enhanced entrance animation
-    gsap.fromTo(document.body,
-      { opacity: 0 },
-      { 
-        opacity: 1, 
-        duration: 1, 
-        ease: "power2.out",
-        onComplete: () => setIsVisible(true)
-      }
-    );
+    setTimeout(() => setIsVisible(true), 100);
   };
 
   const renderSection = () => {
@@ -77,65 +45,65 @@ const Index = () => {
       case 'home':
         return (
           <>
-            <GSAPAnimations animation="fadeIn" duration={1.2}>
-              <EnhancedHero />
-            </GSAPAnimations>
-            <GSAPAnimations animation="slideLeft" delay={0.2} duration={1}>
+            <ScrollReveal direction="up">
+              <Hero />
+            </ScrollReveal>
+            <ScrollReveal direction="left" delay={200}>
               <StatsSection />
-            </GSAPAnimations>
-            <GSAPAnimations animation="scale" delay={0.4} duration={1.2}>
+            </ScrollReveal>
+            <ScrollReveal direction="right" delay={400}>
               <ThreeJsShowcase />
-            </GSAPAnimations>
-            <GSAPAnimations animation="elastic" delay={0.6} duration={1.5}>
+            </ScrollReveal>
+            <ScrollReveal direction="up" delay={600}>
               <TechStack />
-            </GSAPAnimations>
+            </ScrollReveal>
           </>
         );
       case 'about':
         return (
-          <GSAPAnimations animation="slideUp" duration={1}>
+          <ScrollReveal direction="up">
             <About />
-          </GSAPAnimations>
+          </ScrollReveal>
         );
       case 'services':
         return (
-          <GSAPAnimations animation="fadeIn" duration={1}>
+          <ScrollReveal direction="up">
             <Services />
-          </GSAPAnimations>
+          </ScrollReveal>
         );
       case 'portfolio':
         return (
-          <GSAPAnimations animation="slideRight" duration={1}>
+          <ScrollReveal direction="up">
             <Portfolio />
-          </GSAPAnimations>
+          </ScrollReveal>
         );
       case 'contact':
         return (
-          <GSAPAnimations animation="scale" duration={1}>
+          <ScrollReveal direction="up">
             <Contact />
-          </GSAPAnimations>
+          </ScrollReveal>
         );
       case 'ai-assistant':
         return (
-          <GSAPAnimations animation="rotate" duration={1}>
+          <ScrollReveal direction="up">
             <AIAssistant />
-          </GSAPAnimations>
+          </ScrollReveal>
         );
       default:
         return (
           <>
-            <GSAPAnimations animation="fadeIn" duration={1.2}>
-              <EnhancedHero />
-            </GSAPAnimations>
-            <GSAPAnimations animation="slideLeft" delay={0.2} duration={1}>
+            <ScrollReveal direction="up">
+              <Hero />
+            </ScrollReveal>
+            <ScrollReveal direction="left" delay={200}>
               <StatsSection />
-            </GSAPAnimations>
-            <GSAPAnimations animation="scale" delay={0.4} duration={1.2}>
+            </ScrollReveal>
+            <ScrollReveal direction="right" delay={400}>
               <ThreeJsShowcase />
-            </GSAPAnimations>
-            <GSAPAnimations animation="elastic" delay={0.6} duration={1.5}>
+            </ScrollReveal>
+            <ScrollReveal direction="up" delay={600}>
               <TechStack />
-            </GSAPAnimations>
+            </ScrollReveal>
           </>
         );
     }
@@ -146,7 +114,7 @@ const Index = () => {
   }
 
   return (
-    <div className={`min-h-screen bg-terminal-bg text-terminal-text transition-all duration-1000 ${
+    <div className={`min-h-screen bg-terminal-bg text-terminal-text transition-opacity duration-1000 ${
       isVisible ? 'opacity-100' : 'opacity-0'
     }`}>
       {/* Advanced Features */}
@@ -154,68 +122,55 @@ const Index = () => {
       <ParticleBackground />
       <FloatingNav activeSection={activeSection} setActiveSection={setActiveSection} />
       
-      {/* Main Header with GSAP animation */}
-      <GSAPAnimations animation="slideUp" trigger={false} duration={0.8}>
-        <Header activeSection={activeSection} setActiveSection={setActiveSection} />
-      </GSAPAnimations>
+      {/* Main Header */}
+      <Header activeSection={activeSection} setActiveSection={setActiveSection} />
       
       <main className="relative">
         {renderSection()}
         
-        {/* Enhanced Background Patterns with GSAP */}
+        {/* Enhanced Background Patterns */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
-          <GSAPAnimations animation="scale" trigger={false} delay={1} duration={2}>
-            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-terminal-green/5 rounded-full blur-3xl"></div>
-          </GSAPAnimations>
-          <GSAPAnimations animation="rotate" trigger={false} delay={1.5} duration={2}>
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-terminal-blue/5 rounded-full blur-3xl"></div>
-          </GSAPAnimations>
-          <GSAPAnimations animation="elastic" trigger={false} delay={2} duration={2}>
-            <div className="absolute top-3/4 left-1/2 w-48 h-48 bg-terminal-purple/5 rounded-full blur-3xl"></div>
-          </GSAPAnimations>
+          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-terminal-green/5 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-terminal-blue/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-3/4 left-1/2 w-48 h-48 bg-terminal-purple/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
         </div>
         
         {/* Enhanced Code Rain Effect */}
         <div className="fixed inset-0 pointer-events-none opacity-10">
           <div className="absolute top-0 left-0 w-full h-full">
-            {Array.from({ length: 25 }, (_, i) => (
-              <GSAPAnimations
+            {Array.from({ length: 20 }, (_, i) => (
+              <div
                 key={i}
-                animation="fadeIn"
-                trigger={false}
-                delay={Math.random() * 3}
-                duration={2}
+                className="absolute text-terminal-green text-xs font-mono animate-float"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  animationDelay: `${Math.random() * 5}s`,
+                  animationDuration: `${3 + Math.random() * 4}s`
+                }}
               >
-                <div
-                  className="absolute text-terminal-green text-xs font-mono"
-                  style={{
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 100}%`
-                  }}
-                >
-                  {['{...}', 'console.log()', 'async/await', 'useState()', 'gsap.to()', 'THREE.Scene()'][Math.floor(Math.random() * 6)]}
-                </div>
-              </GSAPAnimations>
+                {['{...}', 'console.log()', 'async/await', 'useState()', 'useEffect()'][Math.floor(Math.random() * 5)]}
+              </div>
             ))}
           </div>
         </div>
       </main>
       
-      {/* Enhanced Footer with GSAP */}
+      {/* Enhanced Footer */}
       <footer className="bg-[#1e1e1e] border-t border-terminal-border py-8 px-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-terminal-green/5 via-terminal-blue/5 to-terminal-purple/5"></div>
         <div className="max-w-6xl mx-auto text-center relative z-10">
-          <GSAPAnimations animation="slideUp" duration={0.8}>
+          <ScrollReveal direction="up">
             <p className="text-terminal-text/60 font-mono">
               <span className="syntax-comment">/*</span><br />
-              <span className="syntax-comment"> * © 2024 NodeXstation. Built with ❤️, React, GSAP & Three.js</span><br />
-              <span className="syntax-comment"> * Transforming ideas into digital reality with smooth animations</span><br />
+              <span className="syntax-comment"> * © 2024 NodeXstation. Built with ❤️ and React.</span><br />
+              <span className="syntax-comment"> * Transforming ideas into digital reality.</span><br />
               <span className="syntax-comment"> */</span>
             </p>
             <div className="mt-4 flex justify-center space-x-6">
               <a
                 href="mailto:nodexstation@gmail.com"
-                className="text-terminal-text/60 hover:text-terminal-green transition-all duration-300 font-mono text-sm hover:scale-110 transform"
+                className="text-terminal-text/60 hover:text-terminal-green transition-colors font-mono text-sm hover:scale-110 transform duration-200"
                 data-magnetic
                 data-cursor-text="Send Email"
               >
@@ -225,7 +180,7 @@ const Index = () => {
                 href="https://github.com/nodexStation"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-terminal-text/60 hover:text-terminal-green transition-all duration-300 font-mono text-sm hover:scale-110 transform"
+                className="text-terminal-text/60 hover:text-terminal-green transition-colors font-mono text-sm hover:scale-110 transform duration-200"
                 data-magnetic
                 data-cursor-text="View GitHub"
               >
@@ -235,14 +190,14 @@ const Index = () => {
                 href="https://www.instagram.com/nodex_station/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-terminal-text/60 hover:text-terminal-green transition-all duration-300 font-mono text-sm hover:scale-110 transform"
+                className="text-terminal-text/60 hover:text-terminal-green transition-colors font-mono text-sm hover:scale-110 transform duration-200"
                 data-magnetic
                 data-cursor-text="Follow Instagram"
               >
                 <span className="syntax-variable">instagram</span>
               </a>
             </div>
-          </GSAPAnimations>
+          </ScrollReveal>
         </div>
       </footer>
     </div>
