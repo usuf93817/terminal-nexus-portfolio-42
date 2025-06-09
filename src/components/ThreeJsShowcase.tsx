@@ -1,6 +1,11 @@
+
 import React, { useRef, useEffect, useState } from 'react';
 import { Play, Pause, RotateCcw } from 'lucide-react';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+// Register ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
 
 const ThreeJsShowcase = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -10,7 +15,7 @@ const ThreeJsShowcase = () => {
   const sceneRef = useRef<any>();
 
   useEffect(() => {
-    // GSAP entrance animation
+    // GSAP entrance animation with proper ScrollTrigger setup
     if (containerRef.current) {
       gsap.fromTo(containerRef.current, 
         {
@@ -28,11 +33,17 @@ const ThreeJsShowcase = () => {
             trigger: containerRef.current,
             start: "top 80%",
             end: "bottom 20%",
-            toggleActions: "play none none reverse"
+            toggleActions: "play none none reverse",
+            once: true
           }
         }
       );
     }
+
+    return () => {
+      // Clean up ScrollTrigger instances
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
   }, []);
 
   useEffect(() => {
