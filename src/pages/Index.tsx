@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
@@ -15,6 +14,7 @@ import MagneticCursor from '../components/MagneticCursor';
 import LoadingScreen from '../components/LoadingScreen';
 import ParticleBackground from '../components/ParticleBackground';
 import ScrollReveal from '../components/ScrollReveal';
+import ThreeJsScene from '../components/ThreeJsScene';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -136,6 +136,9 @@ const Index = () => {
     <div className={`min-h-screen bg-terminal-bg text-terminal-text transition-all duration-1000 ease-out ${
       isVisible ? 'opacity-100' : 'opacity-0'
     }`}>
+      {/* Add Three.js background scene */}
+      <ThreeJsScene />
+      
       {/* Advanced Features */}
       <MagneticCursor />
       <ParticleBackground />

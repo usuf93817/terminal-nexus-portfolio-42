@@ -1,6 +1,9 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Code, Database, Brain, Globe } from 'lucide-react';
+import gsap from 'gsap';
+import { TextPlugin } from 'gsap/TextPlugin';
+
+gsap.registerPlugin(TextPlugin);
 
 const Hero = () => {
   const [displayText, setDisplayText] = useState('');
@@ -9,6 +12,10 @@ const Hero = () => {
   const [loopNum, setLoopNum] = useState(0);
   const [typingSpeed, setTypingSpeed] = useState(150);
 
+  const heroRef = useRef<HTMLDivElement>(null);
+  const terminalRef = useRef<HTMLDivElement>(null);
+  const servicesRef = useRef<HTMLDivElement>(null);
+
   const textArray = [
     'Welcome to NodeXstation',
     'MERN Stack Developers',
@@ -16,6 +23,45 @@ const Hero = () => {
     'AI Agent Builders',
     'Data Scraping Experts'
   ];
+
+  useEffect(() => {
+    // GSAP entrance animations
+    const tl = gsap.timeline();
+    
+    tl.from(terminalRef.current, {
+      duration: 1,
+      y: 100,
+      opacity: 0,
+      scale: 0.8,
+      ease: "back.out(1.7)"
+    })
+    .from(servicesRef.current?.children || [], {
+      duration: 0.8,
+      y: 50,
+      opacity: 0,
+      stagger: 0.2,
+      ease: "power2.out"
+    }, "-=0.5");
+
+    // Floating animation for particles
+    gsap.to(".floating-particle", {
+      duration: 3,
+      y: "random(-20, 20)",
+      x: "random(-20, 20)",
+      rotation: "random(-180, 180)",
+      repeat: -1,
+      yoyo: true,
+      ease: "power1.inOut",
+      stagger: {
+        amount: 2,
+        from: "random"
+      }
+    });
+
+    return () => {
+      tl.kill();
+    };
+  }, []);
 
   useEffect(() => {
     const handleTyping = () => {
@@ -71,9 +117,29 @@ const Hero = () => {
     }
   ];
 
+  const handleServiceHover = (element: HTMLElement) => {
+    gsap.to(element, {
+      duration: 0.3,
+      scale: 1.05,
+      y: -10,
+      boxShadow: "0 20px 40px rgba(78, 201, 176, 0.3)",
+      ease: "power2.out"
+    });
+  };
+
+  const handleServiceLeave = (element: HTMLElement) => {
+    gsap.to(element, {
+      duration: 0.3,
+      scale: 1,
+      y: 0,
+      boxShadow: "0 0 0px rgba(78, 201, 176, 0)",
+      ease: "power2.out"
+    });
+  };
+
   return (
-    <section className="min-h-screen flex items-center justify-center relative overflow-hidden py-20 px-6">
-      {/* Animated Background Grid */}
+    <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden py-20 px-6">
+      {/* Enhanced Animated Background Grid */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute inset-0" style={{
           backgroundImage: `
@@ -85,25 +151,23 @@ const Hero = () => {
         }}></div>
       </div>
 
-      {/* Floating Particles */}
+      {/* Enhanced Floating Particles with GSAP */}
       <div className="absolute inset-0 pointer-events-none">
         {Array.from({ length: 30 }, (_, i) => (
           <div
             key={i}
-            className="absolute w-1 h-1 bg-terminal-green rounded-full opacity-60"
+            className="floating-particle absolute w-1 h-1 bg-terminal-green rounded-full opacity-60"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 2}s`
             }}
           />
         ))}
       </div>
 
       <div className="max-w-6xl mx-auto text-center relative z-10">
-        {/* Terminal Window */}
-        <div className="bg-[#1e1e1e] rounded-lg border border-terminal-border overflow-hidden mb-12 hover-glow">
+        {/* Terminal Window with GSAP animations */}
+        <div ref={terminalRef} className="bg-[#1e1e1e] rounded-lg border border-terminal-border overflow-hidden mb-12 hover-glow">
           {/* Terminal Header */}
           <div className="flex items-center justify-between px-6 py-3 bg-[#323233] border-b border-terminal-border">
             <div className="flex items-center space-x-2">
@@ -147,15 +211,16 @@ const Hero = () => {
           </div>
         </div>
 
-        {/* Services Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        {/* Services Grid with enhanced GSAP interactions */}
+        <div ref={servicesRef} className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {services.map((service, index) => (
             <div
               key={service.name}
-              className="bg-terminal-bg/50 border border-terminal-border rounded-lg p-6 hover:border-terminal-green transition-all duration-300 hover:scale-105 group"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              className="bg-terminal-bg/50 border border-terminal-border rounded-lg p-6 hover:border-terminal-green transition-all duration-300 cursor-pointer"
+              onMouseEnter={(e) => handleServiceHover(e.currentTarget)}
+              onMouseLeave={(e) => handleServiceLeave(e.currentTarget)}
             >
-              <service.icon className={`w-8 h-8 ${service.color} mb-4 group-hover:scale-110 transition-transform`} />
+              <service.icon className={`w-8 h-8 ${service.color} mb-4`} />
               <h3 className="text-terminal-text font-semibold mb-2">{service.name}</h3>
               <p className="text-terminal-text/70 text-sm">{service.description}</p>
             </div>
