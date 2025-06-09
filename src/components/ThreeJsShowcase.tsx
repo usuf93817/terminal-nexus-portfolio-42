@@ -11,6 +11,20 @@ const ThreeJsShowcase = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const sceneRef = useRef<any>();
 
+  // Helper function to convert hex color with alpha
+  const hexWithAlpha = (hexColor: string, alpha: number) => {
+    const alphaHex = Math.round(alpha * 255).toString(16).padStart(2, '0');
+    return hexColor + alphaHex;
+  };
+
+  // Helper function to convert hex to rgba
+  const hexToRgba = (hex: string, alpha: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+
   useEffect(() => {
     if (!canvasRef.current) return;
 
@@ -96,8 +110,8 @@ const ThreeJsShowcase = () => {
       ctx.fillStyle = color;
       ctx.fillRect(-size/2, -size/2, size, size);
       
-      // Add depth
-      ctx.fillStyle = color + '80';
+      // Add depth with proper alpha
+      ctx.fillStyle = hexToRgba(color, 0.5);
       ctx.fillRect(-size/2 + 5, -size/2 - 5, size, size);
       
       ctx.restore();
@@ -106,7 +120,7 @@ const ThreeJsShowcase = () => {
     const drawSphere = (ctx: CanvasRenderingContext2D, x: number, y: number, radius: number, color: string) => {
       const gradient = ctx.createRadialGradient(x - radius/3, y - radius/3, 0, x, y, radius);
       gradient.addColorStop(0, color);
-      gradient.addColorStop(1, color + '40');
+      gradient.addColorStop(1, hexToRgba(color, 0.25));
       
       ctx.fillStyle = gradient;
       ctx.beginPath();
@@ -144,7 +158,8 @@ const ThreeJsShowcase = () => {
           wave.radius = 0;
         }
 
-        ctx.strokeStyle = `rgba(78, 201, 176, ${1 - wave.radius / 300})`;
+        const waveOpacity = Math.max(0, 1 - wave.radius / 300);
+        ctx.strokeStyle = `rgba(78, 201, 176, ${waveOpacity})`;
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.arc(wave.x, wave.y, wave.radius, 0, Math.PI * 2);
@@ -227,10 +242,10 @@ const ThreeJsShowcase = () => {
         const size = Math.max(0.5, particle.size - particle.z / 300);
         const opacity = Math.max(0.1, (particle.life / 100) * (1 - particle.z / 1000));
         
-        // Draw particle with glow effect
+        // Draw particle with glow effect using proper rgba
         const gradient = ctx.createRadialGradient(particle.x, particle.y, 0, particle.x, particle.y, size * 3);
-        gradient.addColorStop(0, particle.color + Math.floor(opacity * 255).toString(16).padStart(2, '0'));
-        gradient.addColorStop(1, particle.color + '00');
+        gradient.addColorStop(0, hexToRgba(particle.color, opacity));
+        gradient.addColorStop(1, hexToRgba(particle.color, 0));
         
         ctx.fillStyle = gradient;
         ctx.beginPath();
@@ -254,8 +269,8 @@ const ThreeJsShowcase = () => {
             );
             
             if (distance < 120) {
-              const connectionOpacity = (120 - distance) / 800;
-              ctx.strokeStyle = particle.color + Math.floor(connectionOpacity * 255).toString(16).padStart(2, '0');
+              const connectionOpacity = Math.max(0, (120 - distance) / 800);
+              ctx.strokeStyle = hexToRgba(particle.color, connectionOpacity);
               ctx.lineWidth = 1;
               
               // Create curved connection
