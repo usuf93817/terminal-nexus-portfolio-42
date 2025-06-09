@@ -30,7 +30,9 @@ const Index = () => {
     `;
     document.head.appendChild(style);
 
-    return () => document.head.removeChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
   }, []);
 
   const handleLoadingComplete = () => {
