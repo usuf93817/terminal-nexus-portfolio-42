@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
@@ -14,43 +15,23 @@ import MagneticCursor from '../components/MagneticCursor';
 import LoadingScreen from '../components/LoadingScreen';
 import ParticleBackground from '../components/ParticleBackground';
 import ScrollReveal from '../components/ScrollReveal';
-import ThreeJsScene from '../components/ThreeJsScene';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [isLoading, setIsLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
-    // Enhanced smooth scrolling
+    // Smooth scrolling
     const style = document.createElement('style');
     style.textContent = `
-      html { 
-        scroll-behavior: smooth; 
-        scroll-padding-top: 80px;
-      }
-      body { 
-        cursor: none;
-        overflow-x: hidden;
-      }
-      * {
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                    background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                    border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                    color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      }
+      html { scroll-behavior: smooth; }
+      body { cursor: none; }
     `;
     document.head.appendChild(style);
 
-    // Smooth scroll tracking
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
     return () => {
       document.head.removeChild(style);
-      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -64,7 +45,7 @@ const Index = () => {
       case 'home':
         return (
           <>
-            <ScrollReveal direction="up" delay={0}>
+            <ScrollReveal direction="up">
               <Hero />
             </ScrollReveal>
             <ScrollReveal direction="left" delay={200}>
@@ -111,7 +92,7 @@ const Index = () => {
       default:
         return (
           <>
-            <ScrollReveal direction="up" delay={0}>
+            <ScrollReveal direction="up">
               <Hero />
             </ScrollReveal>
             <ScrollReveal direction="left" delay={200}>
@@ -133,45 +114,25 @@ const Index = () => {
   }
 
   return (
-    <div className={`min-h-screen bg-terminal-bg text-terminal-text transition-all duration-1000 ease-out ${
+    <div className={`min-h-screen bg-terminal-bg text-terminal-text transition-opacity duration-1000 ${
       isVisible ? 'opacity-100' : 'opacity-0'
     }`}>
-      {/* Add Three.js background scene */}
-      <ThreeJsScene />
-      
       {/* Advanced Features */}
       <MagneticCursor />
       <ParticleBackground />
       <FloatingNav activeSection={activeSection} setActiveSection={setActiveSection} />
       
-      {/* Main Header with parallax effect */}
-      <div style={{ transform: `translateY(${scrollY * 0.1}px)` }}>
-        <Header activeSection={activeSection} setActiveSection={setActiveSection} />
-      </div>
+      {/* Main Header */}
+      <Header activeSection={activeSection} setActiveSection={setActiveSection} />
       
       <main className="relative">
         {renderSection()}
         
-        {/* Enhanced Background Patterns with parallax */}
+        {/* Enhanced Background Patterns */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
-          <div 
-            className="absolute top-1/4 left-1/4 w-64 h-64 bg-terminal-green/5 rounded-full blur-3xl animate-pulse"
-            style={{ transform: `translateY(${scrollY * 0.05}px)` }}
-          ></div>
-          <div 
-            className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-terminal-blue/5 rounded-full blur-3xl animate-pulse" 
-            style={{ 
-              animationDelay: '1s',
-              transform: `translateY(${scrollY * -0.03}px)` 
-            }}
-          ></div>
-          <div 
-            className="absolute top-3/4 left-1/2 w-48 h-48 bg-terminal-purple/5 rounded-full blur-3xl animate-pulse" 
-            style={{ 
-              animationDelay: '2s',
-              transform: `translateY(${scrollY * 0.07}px)` 
-            }}
-          ></div>
+          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-terminal-green/5 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-terminal-blue/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-3/4 left-1/2 w-48 h-48 bg-terminal-purple/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
         </div>
         
         {/* Enhanced Code Rain Effect */}
@@ -185,8 +146,7 @@ const Index = () => {
                   left: `${Math.random() * 100}%`,
                   top: `${Math.random() * 100}%`,
                   animationDelay: `${Math.random() * 5}s`,
-                  animationDuration: `${3 + Math.random() * 4}s`,
-                  transform: `translateY(${scrollY * (0.01 + Math.random() * 0.02)}px)`
+                  animationDuration: `${3 + Math.random() * 4}s`
                 }}
               >
                 {['{...}', 'console.log()', 'async/await', 'useState()', 'useEffect()'][Math.floor(Math.random() * 5)]}
@@ -210,7 +170,7 @@ const Index = () => {
             <div className="mt-4 flex justify-center space-x-6">
               <a
                 href="mailto:nodexstation@gmail.com"
-                className="text-terminal-text/60 hover:text-terminal-green transition-all duration-300 font-mono text-sm hover:scale-110 transform"
+                className="text-terminal-text/60 hover:text-terminal-green transition-colors font-mono text-sm hover:scale-110 transform duration-200"
                 data-magnetic
                 data-cursor-text="Send Email"
               >
@@ -220,7 +180,7 @@ const Index = () => {
                 href="https://github.com/nodexStation"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-terminal-text/60 hover:text-terminal-green transition-all duration-300 font-mono text-sm hover:scale-110 transform"
+                className="text-terminal-text/60 hover:text-terminal-green transition-colors font-mono text-sm hover:scale-110 transform duration-200"
                 data-magnetic
                 data-cursor-text="View GitHub"
               >
@@ -230,7 +190,7 @@ const Index = () => {
                 href="https://www.instagram.com/nodex_station/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-terminal-text/60 hover:text-terminal-green transition-all duration-300 font-mono text-sm hover:scale-110 transform"
+                className="text-terminal-text/60 hover:text-terminal-green transition-colors font-mono text-sm hover:scale-110 transform duration-200"
                 data-magnetic
                 data-cursor-text="Follow Instagram"
               >
