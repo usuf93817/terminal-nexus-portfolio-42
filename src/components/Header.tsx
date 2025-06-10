@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Terminal, User, Code, FolderOpen, Mail, Bot } from 'lucide-react';
 
@@ -39,15 +38,29 @@ const Header = ({ activeSection, setActiveSection }: HeaderProps) => {
   };
 
   const handleNavigation = (sectionId: string) => {
-    console.log('Navigating to:', sectionId);
-    setActiveSection(sectionId);
+    console.log('Navigation clicked:', sectionId);
+    console.log('Current activeSection:', activeSection);
     
-    // Scroll to top when changing sections
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Ensure we're calling the prop function correctly
+    if (typeof setActiveSection === 'function') {
+      setActiveSection(sectionId);
+      console.log('Set active section to:', sectionId);
+    } else {
+      console.error('setActiveSection is not a function:', setActiveSection);
+    }
+    
+    // Scroll to top smoothly
+    try {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      console.error('Scroll error:', error);
+      window.scrollTo(0, 0); // Fallback
+    }
   };
 
   const handleCommand = (command: string) => {
     const trimmedCommand = command.trim().toLowerCase();
+    console.log('Executing command:', trimmedCommand);
     
     if (commands[trimmedCommand as keyof typeof commands]) {
       const action = commands[trimmedCommand as keyof typeof commands];
@@ -75,48 +88,63 @@ const Header = ({ activeSection, setActiveSection }: HeaderProps) => {
   const executeCommand = () => {
     if (!commandInput.trim()) return;
     
-    const result = handleCommand(commandInput);
-    
-    if (result === 'CLEAR') {
-      setCommandHistory([]);
-    } else {
-      setCommandHistory(prev => [...prev, `$ ${commandInput}`, result]);
+    try {
+      const result = handleCommand(commandInput);
+      
+      if (result === 'CLEAR') {
+        setCommandHistory([]);
+      } else {
+        setCommandHistory(prev => [...prev, `$ ${commandInput}`, result]);
+      }
+      
+      setCommandInput('');
+      setHistoryIndex(-1);
+    } catch (error) {
+      console.error('Command execution error:', error);
+      setCommandHistory(prev => [...prev, `$ ${commandInput}`, 'Error executing command']);
+      setCommandInput('');
+      setHistoryIndex(-1);
     }
-    
-    setCommandInput('');
-    setHistoryIndex(-1);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      executeCommand();
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (commandHistory.length > 0) {
-        const newIndex = historyIndex === -1 ? commandHistory.length - 2 : Math.max(0, historyIndex - 2);
-        setHistoryIndex(newIndex);
-        if (newIndex >= 0 && commandHistory[newIndex].startsWith('$ ')) {
-          setCommandInput(commandHistory[newIndex].substring(2));
+    try {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        executeCommand();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (commandHistory.length > 0) {
+          const commandLines = commandHistory.filter(line => line.startsWith('$ '));
+          if (commandLines.length > 0) {
+            const currentIndex = historyIndex === -1 ? commandLines.length - 1 : Math.max(0, historyIndex - 1);
+            setHistoryIndex(currentIndex);
+            setCommandInput(commandLines[currentIndex].substring(2));
+          }
+        }
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (historyIndex >= 0) {
+          const commandLines = commandHistory.filter(line => line.startsWith('$ '));
+          const nextIndex = historyIndex + 1;
+          if (nextIndex < commandLines.length) {
+            setHistoryIndex(nextIndex);
+            setCommandInput(commandLines[nextIndex].substring(2));
+          } else {
+            setHistoryIndex(-1);
+            setCommandInput('');
+          }
         }
       }
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      if (historyIndex >= 0) {
-        const newIndex = historyIndex + 2;
-        if (newIndex < commandHistory.length - 1) {
-          setHistoryIndex(newIndex);
-          setCommandInput(commandHistory[newIndex].substring(2));
-        } else {
-          setHistoryIndex(-1);
-          setCommandInput('');
-        }
-      }
+    } catch (error) {
+      console.error('Key handling error:', error);
     }
   };
 
   const toggleTerminal = () => {
-    setShowTerminal(!showTerminal);
-    console.log('Terminal toggled:', !showTerminal);
+    const newState = !showTerminal;
+    setShowTerminal(newState);
+    console.log('Terminal toggled:', newState);
   };
 
   useEffect(() => {
@@ -157,7 +185,12 @@ const Header = ({ activeSection, setActiveSection }: HeaderProps) => {
               {navigation.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => handleNavigation(item.id)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Button clicked for:', item.id);
+                    handleNavigation(item.id);
+                  }}
                   className={`flex items-center space-x-2 px-3 py-1 rounded text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-terminal-green/50 ${
                     activeSection === item.id
                       ? 'bg-terminal-border text-terminal-green'
@@ -165,6 +198,7 @@ const Header = ({ activeSection, setActiveSection }: HeaderProps) => {
                   }`}
                   title={item.command}
                   aria-label={`Navigate to ${item.label}`}
+                  type="button"
                 >
                   <item.icon className="w-4 h-4" />
                   <span>{item.label}</span>
@@ -175,10 +209,15 @@ const Header = ({ activeSection, setActiveSection }: HeaderProps) => {
 
           <div className="flex items-center space-x-2">
             <button
-              onClick={toggleTerminal}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleTerminal();
+              }}
               className="flex items-center space-x-2 px-3 py-1 rounded text-sm text-terminal-text/70 hover:text-terminal-text hover:bg-terminal-border/50 transition-colors focus:outline-none focus:ring-2 focus:ring-terminal-green/50"
               title="Toggle Terminal"
               aria-label="Toggle Terminal"
+              type="button"
             >
               <Terminal className="w-4 h-4" />
               <span className="hidden sm:inline">Terminal</span>
@@ -197,13 +236,19 @@ const Header = ({ activeSection, setActiveSection }: HeaderProps) => {
             {navigation.map((item) => (
               <button
                 key={item.id}
-                onClick={() => handleNavigation(item.id)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('Mobile button clicked for:', item.id);
+                  handleNavigation(item.id);
+                }}
                 className={`flex-shrink-0 flex items-center space-x-2 px-4 py-2 text-sm border-r border-terminal-border transition-colors focus:outline-none focus:ring-2 focus:ring-terminal-green/50 ${
                   activeSection === item.id
                     ? 'bg-terminal-border text-terminal-green'
                     : 'text-terminal-text/70 hover:text-terminal-text hover:bg-terminal-border/50'
                 }`}
                 aria-label={`Navigate to ${item.label}`}
+                type="button"
               >
                 <item.icon className="w-4 h-4" />
                 <span>{item.label}</span>
@@ -224,9 +269,14 @@ const Header = ({ activeSection, setActiveSection }: HeaderProps) => {
                 <span className="text-terminal-text text-sm">NodeXstation Terminal</span>
               </div>
               <button
-                onClick={() => setShowTerminal(false)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowTerminal(false);
+                }}
                 className="text-terminal-text/60 hover:text-terminal-text text-sm focus:outline-none focus:ring-2 focus:ring-terminal-green/50 rounded px-2 py-1"
                 aria-label="Close Terminal"
+                type="button"
               >
                 ✕
               </button>
