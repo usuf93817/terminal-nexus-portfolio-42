@@ -170,88 +170,48 @@ const Header = ({ activeSection }: HeaderProps) => {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#1e1e1e] border-b border-terminal-border">
-        {/* VS Code Style Header */}
-        <div className="flex items-center justify-between px-6 py-2">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Terminal className="w-5 h-5 text-terminal-green" />
-              <span className="text-terminal-text font-semibold">NodeXstation</span>
+      <header className="fixed top-0 left-0 right-0 z-50">
+        <div className="flex items-center justify-between px-6 py-2 bg-[#121212] border-b border-terminal-border text-sm font-mono z-50">
+          {/* Left: Logo and Nav */}
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-1 font-bold text-terminal-green">
+              <Terminal className="w-4 h-4" />
+              <span>NodeXstation</span>
             </div>
-            
-            <nav className="hidden md:flex items-center space-x-1">
-              {navigation.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Button clicked for:', item.id);
-                    handleNavigation(item.path);
-                  }}
-                  className={`flex items-center space-x-2 px-3 py-1 rounded text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-terminal-green/50 ${
-                    location.pathname === item.path
-                      ? 'bg-terminal-border text-terminal-green'
-                      : 'text-terminal-text/70 hover:text-terminal-text hover:bg-terminal-border/50'
-                  }`}
-                  title={item.command}
-                  aria-label={`Navigate to ${item.label}`}
-                  type="button"
-                >
-                  <item.icon className="w-4 h-4" />
-                  <span>{item.label}</span>
-                </button>
-              ))}
+            <nav className="flex items-center space-x-4">
+              {navigation.map((nav) => {
+                const isActive = location.pathname === nav.path;
+                return (
+                  <button
+                    key={nav.id}
+                    onClick={() => handleNavigation(nav.path)}
+                    className={`flex items-center space-x-1 px-2 py-1 rounded transition-colors ${
+                      isActive
+                        ? 'bg-terminal-green/10 text-terminal-green'
+                        : 'text-terminal-text/60 hover:text-terminal-text'
+                    }`}
+                  >
+                    <nav.icon className="w-4 h-4" />
+                    <span>{nav.label}</span>
+                  </button>
+                );
+              })}
             </nav>
           </div>
 
-          <div className="flex items-center space-x-2">
+          {/* Right: Terminal Toggle and Live Status */}
+          <div className="flex items-center space-x-4">
             <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleTerminal();
-              }}
-              className="flex items-center space-x-2 px-3 py-1 rounded text-sm text-terminal-text/70 hover:text-terminal-text hover:bg-terminal-border/50 transition-colors focus:outline-none focus:ring-2 focus:ring-terminal-green/50"
-              title="Toggle Terminal"
-              aria-label="Toggle Terminal"
-              type="button"
+              onClick={() => setShowTerminal(!showTerminal)}
+              className="flex items-center space-x-1 text-terminal-text/60 hover:text-terminal-text"
             >
               <Terminal className="w-4 h-4" />
-              <span className="hidden sm:inline">Terminal</span>
+              <span>Terminal</span>
             </button>
-            
-            <div className="flex items-center space-x-1 text-xs text-terminal-text/60">
-              <div className="w-2 h-2 bg-terminal-green rounded-full animate-pulse"></div>
+            <div className="flex items-center space-x-1 text-terminal-green">
+              <span className="w-2 h-2 rounded-full bg-terminal-green animate-pulse" />
               <span>Live</span>
             </div>
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        <div className="md:hidden border-t border-terminal-border">
-          <div className="flex overflow-x-auto">
-            {navigation.map((item) => (
-              <button
-                key={item.id}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  console.log('Mobile button clicked for:', item.id);
-                  handleNavigation(item.path);
-                }}
-                className={`flex-shrink-0 flex items-center space-x-2 px-4 py-2 text-sm border-r border-terminal-border transition-colors focus:outline-none focus:ring-2 focus:ring-terminal-green/50 ${
-                  location.pathname === item.path
-                    ? 'bg-terminal-border text-terminal-green'
-                    : 'text-terminal-text/70 hover:text-terminal-text hover:bg-terminal-border/50'
-                }`}
-                aria-label={`Navigate to ${item.label}`}
-                type="button"
-              >
-                <item.icon className="w-4 h-4" />
-                <span>{item.label}</span>
-              </button>
-            ))}
           </div>
         </div>
       </header>
