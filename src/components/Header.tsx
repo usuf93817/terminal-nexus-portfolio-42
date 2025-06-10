@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import { Terminal, User, Code, FolderOpen, Mail, Bot } from 'lucide-react';
 
 interface HeaderProps {
@@ -7,9 +6,7 @@ interface HeaderProps {
   setActiveSection: (section: string) => void;
 }
 
-const Header = ({ activeSection }: HeaderProps) => {
-  const navigate = useNavigate();
-  const location = useLocation();
+const Header = ({ activeSection, setActiveSection }: HeaderProps) => {
   const [commandInput, setCommandInput] = useState('');
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
@@ -17,22 +14,22 @@ const Header = ({ activeSection }: HeaderProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const navigation = [
-    { id: 'home', label: 'Home', icon: Terminal, command: 'cd ~', path: '/' },
-    { id: 'about', label: 'About', icon: User, command: 'cd about', path: '/about' },
-    { id: 'services', label: 'Services', icon: Code, command: 'cd services', path: '/services' },
-    { id: 'portfolio', label: 'Portfolio', icon: FolderOpen, command: 'cd portfolio', path: '/portfolio' },
-    { id: 'contact', label: 'Contact', icon: Mail, command: 'cd contact', path: '/contact' },
-    { id: 'ai-assistant', label: 'AI Assistant', icon: Bot, command: 'cd ai-assistant', path: '/ai-assistant' }
+    { id: 'home', label: 'Home', icon: Terminal, command: 'cd ~' },
+    { id: 'about', label: 'About', icon: User, command: 'cd about' },
+    { id: 'services', label: 'Services', icon: Code, command: 'cd services' },
+    { id: 'portfolio', label: 'Portfolio', icon: FolderOpen, command: 'cd portfolio' },
+    { id: 'contact', label: 'Contact', icon: Mail, command: 'cd contact' },
+    { id: 'ai-assistant', label: 'AI Assistant', icon: Bot, command: 'cd ai-assistant' }
   ];
 
   const commands = {
-    'cd ~': '/',
-    'cd home': '/',
-    'cd about': '/about',
-    'cd services': '/services',
-    'cd portfolio': '/portfolio',
-    'cd contact': '/contact',
-    'cd ai-assistant': '/ai-assistant',
+    'cd ~': 'home',
+    'cd home': 'home',
+    'cd about': 'about',
+    'cd services': 'services',
+    'cd portfolio': 'portfolio',
+    'cd contact': 'contact',
+    'cd ai-assistant': 'ai-assistant',
     'ls': 'list',
     'pwd': 'path',
     'whoami': 'user',
@@ -40,9 +37,17 @@ const Header = ({ activeSection }: HeaderProps) => {
     'clear': 'clear'
   };
 
-  const handleNavigation = (path: string) => {
-    console.log('Navigation clicked:', path);
-    navigate(path);
+  const handleNavigation = (sectionId: string) => {
+    console.log('Navigation clicked:', sectionId);
+    console.log('Current activeSection:', activeSection);
+    
+    // Ensure we're calling the prop function correctly
+    if (typeof setActiveSection === 'function') {
+      setActiveSection(sectionId);
+      console.log('Set active section to:', sectionId);
+    } else {
+      console.error('setActiveSection is not a function:', setActiveSection);
+    }
     
     // Scroll to top smoothly
     try {
@@ -64,7 +69,7 @@ const Header = ({ activeSection }: HeaderProps) => {
         case 'list':
           return 'Available sections: home about services portfolio contact ai-assistant';
         case 'path':
-          return `/nodexstation${location.pathname}`;
+          return `/nodexstation/${activeSection}`;
         case 'user':
           return 'nodex@station';
         case 'help':
@@ -72,11 +77,8 @@ const Header = ({ activeSection }: HeaderProps) => {
         case 'clear':
           return 'CLEAR';
         default:
-          if (action.startsWith('/')) {
-            handleNavigation(action);
-            return `Navigated to ${action}`;
-          }
-          return `Command not found: ${command}. Type 'help' for available commands.`;
+          handleNavigation(action);
+          return `Navigated to ${action}`;
       }
     }
     
@@ -170,48 +172,88 @@ const Header = ({ activeSection }: HeaderProps) => {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50">
-        <div className="flex items-center justify-between px-6 py-2 bg-[#121212] border-b border-terminal-border text-sm font-mono z-50">
-          {/* Left: Logo and Nav */}
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-1 font-bold text-terminal-green">
-              <Terminal className="w-4 h-4" />
-              <span>NodeXstation</span>
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#1e1e1e] border-b border-terminal-border">
+        {/* VS Code Style Header */}
+        <div className="flex items-center justify-between px-6 py-2">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <Terminal className="w-5 h-5 text-terminal-green" />
+              <span className="text-terminal-text font-semibold">NodeXstation</span>
             </div>
-            <nav className="flex items-center space-x-4">
-              {navigation.map((nav) => {
-                const isActive = location.pathname === nav.path;
-                return (
-                  <button
-                    key={nav.id}
-                    onClick={() => handleNavigation(nav.path)}
-                    className={`flex items-center space-x-1 px-2 py-1 rounded transition-colors ${
-                      isActive
-                        ? 'bg-terminal-green/10 text-terminal-green'
-                        : 'text-terminal-text/60 hover:text-terminal-text'
-                    }`}
-                  >
-                    <nav.icon className="w-4 h-4" />
-                    <span>{nav.label}</span>
-                  </button>
-                );
-              })}
+            
+            <nav className="hidden md:flex items-center space-x-1">
+              {navigation.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Button clicked for:', item.id);
+                    handleNavigation(item.id);
+                  }}
+                  className={`flex items-center space-x-2 px-3 py-1 rounded text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-terminal-green/50 ${
+                    activeSection === item.id
+                      ? 'bg-terminal-border text-terminal-green'
+                      : 'text-terminal-text/70 hover:text-terminal-text hover:bg-terminal-border/50'
+                  }`}
+                  title={item.command}
+                  aria-label={`Navigate to ${item.label}`}
+                  type="button"
+                >
+                  <item.icon className="w-4 h-4" />
+                  <span>{item.label}</span>
+                </button>
+              ))}
             </nav>
           </div>
 
-          {/* Right: Terminal Toggle and Live Status */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
             <button
-              onClick={() => setShowTerminal(!showTerminal)}
-              className="flex items-center space-x-1 text-terminal-text/60 hover:text-terminal-text"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleTerminal();
+              }}
+              className="flex items-center space-x-2 px-3 py-1 rounded text-sm text-terminal-text/70 hover:text-terminal-text hover:bg-terminal-border/50 transition-colors focus:outline-none focus:ring-2 focus:ring-terminal-green/50"
+              title="Toggle Terminal"
+              aria-label="Toggle Terminal"
+              type="button"
             >
               <Terminal className="w-4 h-4" />
-              <span>Terminal</span>
+              <span className="hidden sm:inline">Terminal</span>
             </button>
-            <div className="flex items-center space-x-1 text-terminal-green">
-              <span className="w-2 h-2 rounded-full bg-terminal-green animate-pulse" />
+            
+            <div className="flex items-center space-x-1 text-xs text-terminal-text/60">
+              <div className="w-2 h-2 bg-terminal-green rounded-full animate-pulse"></div>
               <span>Live</span>
             </div>
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        <div className="md:hidden border-t border-terminal-border">
+          <div className="flex overflow-x-auto">
+            {navigation.map((item) => (
+              <button
+                key={item.id}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('Mobile button clicked for:', item.id);
+                  handleNavigation(item.id);
+                }}
+                className={`flex-shrink-0 flex items-center space-x-2 px-4 py-2 text-sm border-r border-terminal-border transition-colors focus:outline-none focus:ring-2 focus:ring-terminal-green/50 ${
+                  activeSection === item.id
+                    ? 'bg-terminal-border text-terminal-green'
+                    : 'text-terminal-text/70 hover:text-terminal-text hover:bg-terminal-border/50'
+                }`}
+                aria-label={`Navigate to ${item.label}`}
+                type="button"
+              >
+                <item.icon className="w-4 h-4" />
+                <span>{item.label}</span>
+              </button>
+            ))}
           </div>
         </div>
       </header>
@@ -252,7 +294,7 @@ const Header = ({ activeSection }: HeaderProps) => {
               
               {/* Input Line */}
               <div className="flex items-center space-x-2 mt-2">
-                <span className="text-terminal-green">nodex@station:~{location.pathname !== '/' ? location.pathname : ''}$</span>
+                <span className="text-terminal-green">nodex@station:~{activeSection !== 'home' ? `/${activeSection}` : ''}$</span>
                 <input
                   ref={inputRef}
                   type="text"

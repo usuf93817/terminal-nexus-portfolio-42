@@ -12,16 +12,12 @@ const MagneticCursor: React.FC = () => {
     };
 
     const handleMouseEnter = (e: Event) => {
-      const target = e.target as Element;
-      
-      // Check if target is an HTML element and has the hasAttribute method
-      if (target && target instanceof HTMLElement) {
-        if (target.hasAttribute('data-cursor-text')) {
-          setCursorText(target.getAttribute('data-cursor-text') || '');
-          setIsHovering(true);
-        } else if (target.tagName === 'BUTTON' || target.tagName === 'A' || target.hasAttribute('data-magnetic')) {
-          setIsHovering(true);
-        }
+      const target = e.target as HTMLElement;
+      if (target.hasAttribute('data-cursor-text')) {
+        setCursorText(target.getAttribute('data-cursor-text') || '');
+        setIsHovering(true);
+      } else if (target.tagName === 'BUTTON' || target.tagName === 'A' || target.hasAttribute('data-magnetic')) {
+        setIsHovering(true);
       }
     };
 
