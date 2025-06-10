@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Terminal, User, Code, FolderOpen, Mail, Bot } from 'lucide-react';
 
 interface HeaderProps {
@@ -6,7 +7,9 @@ interface HeaderProps {
   setActiveSection: (section: string) => void;
 }
 
-const Header = ({ activeSection, setActiveSection }: HeaderProps) => {
+const Header = ({ activeSection }: HeaderProps) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [commandInput, setCommandInput] = useState('');
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
@@ -14,22 +17,22 @@ const Header = ({ activeSection, setActiveSection }: HeaderProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const navigation = [
-    { id: 'home', label: 'Home', icon: Terminal, command: 'cd ~' },
-    { id: 'about', label: 'About', icon: User, command: 'cd about' },
-    { id: 'services', label: 'Services', icon: Code, command: 'cd services' },
-    { id: 'portfolio', label: 'Portfolio', icon: FolderOpen, command: 'cd portfolio' },
-    { id: 'contact', label: 'Contact', icon: Mail, command: 'cd contact' },
-    { id: 'ai-assistant', label: 'AI Assistant', icon: Bot, command: 'cd ai-assistant' }
+    { id: 'home', label: 'Home', icon: Terminal, command: 'cd ~', path: '/' },
+    { id: 'about', label: 'About', icon: User, command: 'cd about', path: '/about' },
+    { id: 'services', label: 'Services', icon: Code, command: 'cd services', path: '/services' },
+    { id: 'portfolio', label: 'Portfolio', icon: FolderOpen, command: 'cd portfolio', path: '/portfolio' },
+    { id: 'contact', label: 'Contact', icon: Mail, command: 'cd contact', path: '/contact' },
+    { id: 'ai-assistant', label: 'AI Assistant', icon: Bot, command: 'cd ai-assistant', path: '/ai-assistant' }
   ];
 
   const commands = {
-    'cd ~': 'home',
-    'cd home': 'home',
-    'cd about': 'about',
-    'cd services': 'services',
-    'cd portfolio': 'portfolio',
-    'cd contact': 'contact',
-    'cd ai-assistant': 'ai-assistant',
+    'cd ~': '/',
+    'cd home': '/',
+    'cd about': '/about',
+    'cd services': '/services',
+    'cd portfolio': '/portfolio',
+    'cd contact': '/contact',
+    'cd ai-assistant': '/ai-assistant',
     'ls': 'list',
     'pwd': 'path',
     'whoami': 'user',
@@ -37,17 +40,9 @@ const Header = ({ activeSection, setActiveSection }: HeaderProps) => {
     'clear': 'clear'
   };
 
-  const handleNavigation = (sectionId: string) => {
-    console.log('Navigation clicked:', sectionId);
-    console.log('Current activeSection:', activeSection);
-    
-    // Ensure we're calling the prop function correctly
-    if (typeof setActiveSection === 'function') {
-      setActiveSection(sectionId);
-      console.log('Set active section to:', sectionId);
-    } else {
-      console.error('setActiveSection is not a function:', setActiveSection);
-    }
+  const handleNavigation = (path: string) => {
+    console.log('Navigation clicked:', path);
+    navigate(path);
     
     // Scroll to top smoothly
     try {
@@ -69,7 +64,7 @@ const Header = ({ activeSection, setActiveSection }: HeaderProps) => {
         case 'list':
           return 'Available sections: home about services portfolio contact ai-assistant';
         case 'path':
-          return `/nodexstation/${activeSection}`;
+          return `/nodexstation${location.pathname}`;
         case 'user':
           return 'nodex@station';
         case 'help':
@@ -77,8 +72,11 @@ const Header = ({ activeSection, setActiveSection }: HeaderProps) => {
         case 'clear':
           return 'CLEAR';
         default:
-          handleNavigation(action);
-          return `Navigated to ${action}`;
+          if (action.startsWith('/')) {
+            handleNavigation(action);
+            return `Navigated to ${action}`;
+          }
+          return `Command not found: ${command}. Type 'help' for available commands.`;
       }
     }
     
@@ -189,10 +187,10 @@ const Header = ({ activeSection, setActiveSection }: HeaderProps) => {
                     e.preventDefault();
                     e.stopPropagation();
                     console.log('Button clicked for:', item.id);
-                    handleNavigation(item.id);
+                    handleNavigation(item.path);
                   }}
                   className={`flex items-center space-x-2 px-3 py-1 rounded text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-terminal-green/50 ${
-                    activeSection === item.id
+                    location.pathname === item.path
                       ? 'bg-terminal-border text-terminal-green'
                       : 'text-terminal-text/70 hover:text-terminal-text hover:bg-terminal-border/50'
                   }`}
@@ -240,10 +238,10 @@ const Header = ({ activeSection, setActiveSection }: HeaderProps) => {
                   e.preventDefault();
                   e.stopPropagation();
                   console.log('Mobile button clicked for:', item.id);
-                  handleNavigation(item.id);
+                  handleNavigation(item.path);
                 }}
                 className={`flex-shrink-0 flex items-center space-x-2 px-4 py-2 text-sm border-r border-terminal-border transition-colors focus:outline-none focus:ring-2 focus:ring-terminal-green/50 ${
-                  activeSection === item.id
+                  location.pathname === item.path
                     ? 'bg-terminal-border text-terminal-green'
                     : 'text-terminal-text/70 hover:text-terminal-text hover:bg-terminal-border/50'
                 }`}
@@ -294,7 +292,7 @@ const Header = ({ activeSection, setActiveSection }: HeaderProps) => {
               
               {/* Input Line */}
               <div className="flex items-center space-x-2 mt-2">
-                <span className="text-terminal-green">nodex@station:~{activeSection !== 'home' ? `/${activeSection}` : ''}$</span>
+                <span className="text-terminal-green">nodex@station:~{location.pathname !== '/' ? location.pathname : ''}$</span>
                 <input
                   ref={inputRef}
                   type="text"

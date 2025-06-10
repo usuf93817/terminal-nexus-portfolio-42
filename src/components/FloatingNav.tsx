@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, User, Briefcase, FolderOpen, Mail, Bot } from 'lucide-react';
 
 interface FloatingNavProps {
@@ -7,18 +8,20 @@ interface FloatingNavProps {
   setActiveSection: (section: string) => void;
 }
 
-const FloatingNav: React.FC<FloatingNavProps> = ({ activeSection, setActiveSection }) => {
+const FloatingNav: React.FC<FloatingNavProps> = ({ activeSection }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isVisible, setIsVisible] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   const navItems = [
-    { id: 'home', icon: Home, label: 'Home' },
-    { id: 'about', icon: User, label: 'About' },
-    { id: 'services', icon: Briefcase, label: 'Services' },
-    { id: 'portfolio', icon: FolderOpen, label: 'Portfolio' },
-    { id: 'contact', icon: Mail, label: 'Contact' },
-    { id: 'ai-assistant', icon: Bot, label: 'AI Assistant' }
+    { id: 'home', icon: Home, label: 'Home', path: '/' },
+    { id: 'about', icon: User, label: 'About', path: '/about' },
+    { id: 'services', icon: Briefcase, label: 'Services', path: '/services' },
+    { id: 'portfolio', icon: FolderOpen, label: 'Portfolio', path: '/portfolio' },
+    { id: 'contact', icon: Mail, label: 'Contact', path: '/contact' },
+    { id: 'ai-assistant', icon: Bot, label: 'AI Assistant', path: '/ai-assistant' }
   ];
 
   useEffect(() => {
@@ -33,6 +36,13 @@ const FloatingNav: React.FC<FloatingNavProps> = ({ activeSection, setActiveSecti
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <div className={`fixed right-6 top-1/2 transform -translate-y-1/2 z-50 transition-all duration-700 ease-out ${
@@ -51,17 +61,17 @@ const FloatingNav: React.FC<FloatingNavProps> = ({ activeSection, setActiveSecti
         {navItems.map((item, index) => (
           <button
             key={item.id}
-            onClick={() => setActiveSection(item.id)}
+            onClick={() => handleNavigation(item.path)}
             onMouseEnter={() => setHoveredItem(item.id)}
             onMouseLeave={() => setHoveredItem(null)}
             className={`group relative w-12 h-12 rounded-full border transition-all duration-500 ease-out transform will-change-transform ${
-              activeSection === item.id
+              isActive(item.path)
                 ? 'bg-terminal-green border-terminal-green text-terminal-bg scale-110 shadow-lg shadow-terminal-green/30'
                 : 'bg-terminal-bg/90 border-terminal-border text-terminal-text hover:border-terminal-green backdrop-blur-sm hover:scale-110 hover:shadow-lg hover:shadow-terminal-green/20'
             } ${hoveredItem === item.id ? 'z-10' : ''}`}
             style={{ 
               animationDelay: `${index * 0.1}s`,
-              transform: hoveredItem === item.id ? 'scale(1.15)' : activeSection === item.id ? 'scale(1.1)' : 'scale(1)'
+              transform: hoveredItem === item.id ? 'scale(1.15)' : isActive(item.path) ? 'scale(1.1)' : 'scale(1)'
             }}
           >
             <item.icon className="w-5 h-5 mx-auto transition-transform duration-300" />
@@ -78,7 +88,7 @@ const FloatingNav: React.FC<FloatingNavProps> = ({ activeSection, setActiveSecti
 
             {/* Ripple effect */}
             <div className={`absolute inset-0 rounded-full bg-terminal-green/20 scale-0 transition-transform duration-300 ${
-              activeSection === item.id ? 'animate-ping' : ''
+              isActive(item.path) ? 'animate-ping' : ''
             }`} />
           </button>
         ))}
