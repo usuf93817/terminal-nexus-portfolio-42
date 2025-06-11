@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
@@ -15,6 +14,10 @@ import MagneticCursor from '../components/MagneticCursor';
 import LoadingScreen from '../components/LoadingScreen';
 import ParticleBackground from '../components/ParticleBackground';
 import ScrollReveal from '../components/ScrollReveal';
+import LiveCodeEditor from '../components/LiveCodeEditor';
+import InteractiveTerminal from '../components/InteractiveTerminal';
+import ReactiveParticles from '../components/ReactiveParticles';
+import ProjectCarousel from '../components/ProjectCarousel';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -55,6 +58,15 @@ const Index = () => {
               <ThreeJsShowcase />
             </ScrollReveal>
             <ScrollReveal direction="up" delay={600}>
+              <ReactiveParticles />
+            </ScrollReveal>
+            <ScrollReveal direction="left" delay={800}>
+              <LiveCodeEditor />
+            </ScrollReveal>
+            <ScrollReveal direction="right" delay={1000}>
+              <InteractiveTerminal />
+            </ScrollReveal>
+            <ScrollReveal direction="up" delay={1200}>
               <TechStack />
             </ScrollReveal>
           </>
@@ -73,9 +85,14 @@ const Index = () => {
         );
       case 'portfolio':
         return (
-          <ScrollReveal direction="up">
-            <Portfolio />
-          </ScrollReveal>
+          <>
+            <ScrollReveal direction="up">
+              <Portfolio />
+            </ScrollReveal>
+            <ScrollReveal direction="up" delay={200}>
+              <ProjectCarousel />
+            </ScrollReveal>
+          </>
         );
       case 'contact':
         return (
@@ -102,6 +119,15 @@ const Index = () => {
               <ThreeJsShowcase />
             </ScrollReveal>
             <ScrollReveal direction="up" delay={600}>
+              <ReactiveParticles />
+            </ScrollReveal>
+            <ScrollReveal direction="left" delay={800}>
+              <LiveCodeEditor />
+            </ScrollReveal>
+            <ScrollReveal direction="right" delay={1000}>
+              <InteractiveTerminal />
+            </ScrollReveal>
+            <ScrollReveal direction="up" delay={1200}>
               <TechStack />
             </ScrollReveal>
           </>
