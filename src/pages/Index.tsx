@@ -18,6 +18,11 @@ import LiveCodeEditor from '../components/LiveCodeEditor';
 import InteractiveTerminal from '../components/InteractiveTerminal';
 import ReactiveParticles from '../components/ReactiveParticles';
 import ProjectCarousel from '../components/ProjectCarousel';
+import RealTimeContactForm from '../components/RealTimeContactForm';
+import ThemeSwitcher from '../components/ThemeSwitcher';
+import SkillQuiz from '../components/SkillQuiz';
+import WeatherWidget from '../components/WeatherWidget';
+import GitHubStats from '../components/GitHubStats';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -67,6 +72,12 @@ const Index = () => {
               <InteractiveTerminal />
             </ScrollReveal>
             <ScrollReveal direction="up" delay={1200}>
+              <SkillQuiz />
+            </ScrollReveal>
+            <ScrollReveal direction="left" delay={1400}>
+              <GitHubStats />
+            </ScrollReveal>
+            <ScrollReveal direction="right" delay={1600}>
               <TechStack />
             </ScrollReveal>
           </>
@@ -96,9 +107,14 @@ const Index = () => {
         );
       case 'contact':
         return (
-          <ScrollReveal direction="up">
-            <Contact />
-          </ScrollReveal>
+          <>
+            <ScrollReveal direction="up">
+              <Contact />
+            </ScrollReveal>
+            <ScrollReveal direction="up" delay={200}>
+              <RealTimeContactForm />
+            </ScrollReveal>
+          </>
         );
       case 'ai-assistant':
         return (
@@ -128,6 +144,12 @@ const Index = () => {
               <InteractiveTerminal />
             </ScrollReveal>
             <ScrollReveal direction="up" delay={1200}>
+              <SkillQuiz />
+            </ScrollReveal>
+            <ScrollReveal direction="left" delay={1400}>
+              <GitHubStats />
+            </ScrollReveal>
+            <ScrollReveal direction="right" delay={1600}>
               <TechStack />
             </ScrollReveal>
           </>
@@ -147,6 +169,8 @@ const Index = () => {
       <MagneticCursor />
       <ParticleBackground />
       <FloatingNav activeSection={activeSection} setActiveSection={setActiveSection} />
+      <ThemeSwitcher />
+      <WeatherWidget />
       
       {/* Main Header */}
       <Header activeSection={activeSection} setActiveSection={setActiveSection} />
