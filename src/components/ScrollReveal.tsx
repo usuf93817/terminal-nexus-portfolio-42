@@ -6,13 +6,15 @@ interface ScrollRevealProps {
   direction?: 'up' | 'down' | 'left' | 'right';
   delay?: number;
   className?: string;
+  variant?: 'default' | 'holographic' | 'matrix' | 'glitch';
 }
 
 const ScrollReveal: React.FC<ScrollRevealProps> = ({ 
   children, 
   direction = 'up', 
   delay = 0,
-  className = ''
+  className = '',
+  variant = 'default'
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const elementRef = useRef<HTMLDivElement>(null);
@@ -46,16 +48,36 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
     }
   };
 
+  const getVariantStyles = () => {
+    switch (variant) {
+      case 'holographic':
+        return 'before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-terminal-green/20 before:to-transparent before:translate-x-[-100%] before:transition-transform before:duration-1000 hover:before:translate-x-[100%] relative overflow-hidden';
+      case 'matrix':
+        return 'matrix-text relative';
+      case 'glitch':
+        return 'relative hover:animate-pulse';
+      default:
+        return '';
+    }
+  };
+
   return (
     <div
       ref={elementRef}
-      className={`transition-all duration-1000 ease-out ${className}`}
+      className={`transition-all duration-1000 ease-out ${getVariantStyles()} ${className}`}
       style={{
         transform: getTransform(),
-        opacity: isVisible ? 1 : 0
+        opacity: isVisible ? 1 : 0,
+        filter: isVisible && variant === 'holographic' ? 'drop-shadow(0 0 20px rgba(78, 201, 176, 0.5))' : 'none'
       }}
     >
       {children}
+      {variant === 'glitch' && (
+        <>
+          <div className="absolute inset-0 bg-terminal-red/10 translate-x-1 opacity-0 hover:opacity-100 transition-opacity duration-100" />
+          <div className="absolute inset-0 bg-terminal-blue/10 -translate-x-1 opacity-0 hover:opacity-100 transition-opacity duration-150" />
+        </>
+      )}
     </div>
   );
 };
