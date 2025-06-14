@@ -61,82 +61,122 @@ const ThemeSwitcher = () => {
 
   const applyTheme = (themeKey: string) => {
     const theme = themes[themeKey as keyof typeof themes];
+    if (!theme) return;
+    
     const root = document.documentElement;
     
-    // Update CSS custom properties
-    root.style.setProperty('--terminal-green', theme.primary);
-    root.style.setProperty('--terminal-blue', theme.secondary);
-    root.style.setProperty('--terminal-yellow', theme.accent);
-    root.style.setProperty('--terminal-bg', theme.bg);
-    root.style.setProperty('--terminal-border', theme.border);
-    root.style.setProperty('--terminal-text', theme.text);
-    
-    // Update Tailwind CSS variables
-    root.style.setProperty('--background', theme.bg);
-    root.style.setProperty('--foreground', theme.text);
-    root.style.setProperty('--border', theme.border);
-    
-    setCurrentTheme(themeKey);
-    localStorage.setItem('preferred-theme', themeKey);
+    try {
+      // Update CSS custom properties with proper fallbacks
+      root.style.setProperty('--terminal-green', theme.primary);
+      root.style.setProperty('--terminal-blue', theme.secondary);
+      root.style.setProperty('--terminal-yellow', theme.accent);
+      root.style.setProperty('--terminal-purple', theme.secondary);
+      root.style.setProperty('--terminal-orange', theme.accent);
+      root.style.setProperty('--terminal-red', '#ff4444');
+      root.style.setProperty('--terminal-bg', theme.bg);
+      root.style.setProperty('--terminal-border', theme.border);
+      root.style.setProperty('--terminal-text', theme.text);
+      
+      // Update Tailwind CSS variables
+      root.style.setProperty('--background', theme.bg);
+      root.style.setProperty('--foreground', theme.text);
+      root.style.setProperty('--border', theme.border);
+      
+      // Update body background
+      document.body.style.background = `linear-gradient(135deg, ${theme.bg} 0%, ${theme.border} 100%)`;
+      
+      setCurrentTheme(themeKey);
+      localStorage.setItem('preferred-theme', themeKey);
+      
+      console.log(`Theme applied: ${theme.name}`);
+    } catch (error) {
+      console.error('Error applying theme:', error);
+    }
   };
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('[data-theme-switcher]')) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('preferred-theme');
     if (savedTheme && themes[savedTheme as keyof typeof themes]) {
       applyTheme(savedTheme);
+    } else {
+      // Apply default theme on first load
+      applyTheme('matrix');
     }
   }, []);
 
   return (
-    <div className="fixed top-20 right-6 z-50">
+    <div className="fixed top-20 right-6 z-50" data-theme-switcher>
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="p-3 bg-terminal-bg/90 border border-terminal-border rounded-lg text-terminal-green hover:bg-terminal-bg transition-all duration-300 backdrop-blur-md shadow-lg hover:shadow-xl"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsOpen(!isOpen);
+        }}
+        className="p-3 bg-black/90 border border-gray-600 rounded-lg text-green-400 hover:bg-black hover:border-green-400 transition-all duration-300 backdrop-blur-md shadow-lg hover:shadow-xl"
         title="Change Theme"
+        type="button"
       >
         <Palette className="w-5 h-5" />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-72 bg-terminal-bg/95 border border-terminal-border rounded-lg overflow-hidden animate-fade-in backdrop-blur-md shadow-xl">
-          <div className="px-4 py-3 bg-terminal-bg/80 border-b border-terminal-border">
-            <h3 className="text-terminal-green font-mono font-semibold">Choose Theme</h3>
+        <div className="absolute top-full right-0 mt-2 w-72 bg-black/95 border border-gray-600 rounded-lg overflow-hidden animate-fade-in backdrop-blur-md shadow-xl">
+          <div className="px-4 py-3 bg-black/80 border-b border-gray-600">
+            <h3 className="text-green-400 font-mono font-semibold">Choose Theme</h3>
           </div>
           
           <div className="p-2 space-y-1">
             {Object.entries(themes).map(([key, theme]) => (
               <button
                 key={key}
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   applyTheme(key);
                   setIsOpen(false);
                 }}
-                className="w-full p-3 rounded-lg hover:bg-terminal-border/30 transition-colors text-left group"
+                className="w-full p-3 rounded-lg hover:bg-gray-800/50 transition-colors text-left group"
+                type="button"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="flex space-x-1">
                       <div 
-                        className="w-3 h-3 rounded-full border border-terminal-border/30" 
+                        className="w-3 h-3 rounded-full border border-gray-600" 
                         style={{ backgroundColor: theme.primary }}
                       />
                       <div 
-                        className="w-3 h-3 rounded-full border border-terminal-border/30" 
+                        className="w-3 h-3 rounded-full border border-gray-600" 
                         style={{ backgroundColor: theme.secondary }}
                       />
                       <div 
-                        className="w-3 h-3 rounded-full border border-terminal-border/30" 
+                        className="w-3 h-3 rounded-full border border-gray-600" 
                         style={{ backgroundColor: theme.accent }}
                       />
                     </div>
                     <div>
-                      <div className="text-terminal-text font-mono text-sm">{theme.name}</div>
-                      <div className="text-terminal-text/60 text-xs">{theme.description}</div>
+                      <div className="text-gray-200 font-mono text-sm">{theme.name}</div>
+                      <div className="text-gray-400 text-xs">{theme.description}</div>
                     </div>
                   </div>
                   
                   {currentTheme === key && (
-                    <Check className="w-4 h-4 text-terminal-green" />
+                    <Check className="w-4 h-4 text-green-400" />
                   )}
                 </div>
               </button>

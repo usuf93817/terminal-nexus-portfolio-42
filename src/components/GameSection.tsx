@@ -80,6 +80,7 @@ const GameSection = () => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (activeGame !== 'snake' || !snakeGame.isPlaying) return;
 
+      e.preventDefault();
       setSnakeGame(prev => {
         switch (e.key) {
           case 'ArrowUp':
@@ -195,33 +196,33 @@ const GameSection = () => {
       name: 'Neural Snake',
       description: 'Classic snake with a cyberpunk twist',
       icon: <Target className="w-6 h-6" />,
-      color: 'from-terminal-green to-terminal-blue'
+      color: 'from-green-400 to-blue-400'
     },
     {
       id: 'memory',
       name: 'Memory Matrix',
       description: 'Test your cognitive processing power',
       icon: <Zap className="w-6 h-6" />,
-      color: 'from-terminal-blue to-terminal-purple'
+      color: 'from-blue-400 to-purple-400'
     },
     {
       id: 'reaction',
       name: 'Reflex Optimizer',
       description: 'Measure your neural response time',
       icon: <Trophy className="w-6 h-6" />,
-      color: 'from-terminal-purple to-terminal-orange'
+      color: 'from-purple-400 to-orange-400'
     }
   ];
 
   return (
     <section className="min-h-screen py-20 px-6 relative overflow-hidden">
       {/* Futuristic Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-terminal-bg via-[#1a1a2e] to-terminal-bg"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-900"></div>
       <div className="absolute inset-0">
         {Array.from({ length: 50 }, (_, i) => (
           <div
             key={i}
-            className="absolute w-1 h-1 bg-terminal-green rounded-full opacity-20 animate-pulse"
+            className="absolute w-1 h-1 bg-green-400 rounded-full opacity-20 animate-pulse"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
@@ -235,11 +236,11 @@ const GameSection = () => {
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-terminal-green via-terminal-blue to-terminal-purple bg-clip-text text-transparent">
+          <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-green-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
             Neural Gaming Arena
           </h2>
-          <p className="text-terminal-text/80 text-xl max-w-3xl mx-auto">
-            <span className="syntax-comment">// Challenge your cognitive abilities with these futuristic mini-games</span>
+          <p className="text-gray-400 text-xl max-w-3xl mx-auto">
+            <span className="text-green-400 italic">// Challenge your cognitive abilities with these futuristic mini-games</span>
           </p>
         </div>
 
@@ -249,28 +250,31 @@ const GameSection = () => {
             {games.map((game) => (
               <button
                 key={game.id}
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log(`Selecting game: ${game.id}`);
                   setActiveGame(game.id);
                   if (game.id === 'memory') initMemoryGame();
                 }}
-                className="group relative bg-gradient-to-br from-terminal-bg/50 to-terminal-border/50 rounded-2xl p-8 border border-terminal-border hover:border-terminal-green transition-all duration-500 hover:scale-105 backdrop-blur-md"
+                className="group relative bg-gradient-to-br from-gray-900/50 to-black/50 rounded-2xl p-8 border border-gray-700 hover:border-green-400 transition-all duration-500 hover:scale-105 backdrop-blur-md"
+                type="button"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${game.color} opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-500`} />
                 
                 <div className="relative z-10">
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br ${game.color} flex items-center justify-center text-terminal-bg shadow-lg`}>
+                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br ${game.color} flex items-center justify-center text-black shadow-lg`}>
                     {game.icon}
                   </div>
                   
-                  <h3 className="text-xl font-bold text-terminal-green mb-3 font-mono">
+                  <h3 className="text-xl font-bold text-green-400 mb-3 font-mono">
                     {game.name}
                   </h3>
                   
-                  <p className="text-terminal-text/70 text-sm leading-relaxed">
+                  <p className="text-gray-400 text-sm leading-relaxed">
                     {game.description}
                   </p>
                   
-                  <div className="mt-6 flex items-center justify-center space-x-2 text-terminal-blue">
+                  <div className="mt-6 flex items-center justify-center space-x-2 text-blue-400">
                     <Gamepad2 className="w-4 h-4" />
                     <span className="text-sm font-mono">Initialize Game</span>
                   </div>
@@ -282,14 +286,18 @@ const GameSection = () => {
 
         {/* Snake Game */}
         {activeGame === 'snake' && (
-          <div className="bg-terminal-bg/90 rounded-2xl border border-terminal-border p-8 backdrop-blur-md">
+          <div className="bg-black/90 rounded-2xl border border-gray-700 p-8 backdrop-blur-md">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold text-terminal-green font-mono">Neural Snake</h3>
+              <h3 className="text-2xl font-bold text-green-400 font-mono">Neural Snake</h3>
               <div className="flex items-center space-x-4">
-                <div className="text-terminal-yellow font-mono">Score: {snakeGame.score}</div>
+                <div className="text-yellow-400 font-mono">Score: {snakeGame.score}</div>
                 <button
-                  onClick={() => setActiveGame(null)}
-                  className="px-4 py-2 bg-terminal-border rounded-lg hover:bg-terminal-border/80 transition-colors"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setActiveGame(null);
+                  }}
+                  className="px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+                  type="button"
                 >
                   Exit
                 </button>
@@ -298,7 +306,7 @@ const GameSection = () => {
 
             <div className="flex flex-col lg:flex-row gap-8">
               <div className="flex-1">
-                <div className="bg-[#0a0a0a] border-2 border-terminal-green rounded-lg p-2 inline-block">
+                <div className="bg-black border-2 border-green-400 rounded-lg p-2 inline-block">
                   <div className="grid grid-cols-20 gap-px" style={{ width: '400px', height: '400px' }}>
                     {Array.from({ length: 400 }, (_, i) => {
                       const x = i % 20;
@@ -312,12 +320,12 @@ const GameSection = () => {
                           key={i}
                           className={`w-full h-full ${
                             isFood 
-                              ? 'bg-terminal-orange animate-pulse' 
+                              ? 'bg-orange-400 animate-pulse' 
                               : isHead 
-                                ? 'bg-terminal-yellow' 
+                                ? 'bg-yellow-400' 
                                 : isSnake 
-                                  ? 'bg-terminal-green' 
-                                  : 'bg-terminal-bg/20'
+                                  ? 'bg-green-400' 
+                                  : 'bg-gray-900/20'
                           }`}
                         />
                       );
@@ -327,9 +335,9 @@ const GameSection = () => {
               </div>
 
               <div className="lg:w-64 space-y-4">
-                <div className="bg-terminal-border/20 rounded-lg p-6">
-                  <h4 className="text-terminal-green font-mono mb-4">Controls</h4>
-                  <div className="space-y-2 text-sm text-terminal-text/80">
+                <div className="bg-gray-800/20 rounded-lg p-6">
+                  <h4 className="text-green-400 font-mono mb-4">Controls</h4>
+                  <div className="space-y-2 text-sm text-gray-400">
                     <div>↑ ↓ ← → Arrow Keys</div>
                     <div>Avoid walls and yourself</div>
                     <div>Eat orange food to grow</div>
@@ -339,8 +347,13 @@ const GameSection = () => {
                 <div className="space-y-3">
                   {!snakeGame.isPlaying && !snakeGame.gameOver && (
                     <button
-                      onClick={() => setSnakeGame(prev => ({ ...prev, isPlaying: true }))}
-                      className="w-full flex items-center justify-center space-x-2 bg-terminal-green text-terminal-bg py-3 rounded-lg hover:bg-terminal-green/90 transition-colors font-mono"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        console.log('Starting snake game');
+                        setSnakeGame(prev => ({ ...prev, isPlaying: true }));
+                      }}
+                      className="w-full flex items-center justify-center space-x-2 bg-green-400 text-black py-3 rounded-lg hover:bg-green-300 transition-colors font-mono"
+                      type="button"
                     >
                       <Play className="w-4 h-4" />
                       <span>Start Game</span>
@@ -349,8 +362,12 @@ const GameSection = () => {
 
                   {snakeGame.isPlaying && (
                     <button
-                      onClick={() => setSnakeGame(prev => ({ ...prev, isPlaying: false }))}
-                      className="w-full flex items-center justify-center space-x-2 bg-terminal-orange text-terminal-bg py-3 rounded-lg hover:bg-terminal-orange/90 transition-colors font-mono"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setSnakeGame(prev => ({ ...prev, isPlaying: false }));
+                      }}
+                      className="w-full flex items-center justify-center space-x-2 bg-orange-400 text-black py-3 rounded-lg hover:bg-orange-300 transition-colors font-mono"
+                      type="button"
                     >
                       <Pause className="w-4 h-4" />
                       <span>Pause</span>
@@ -358,8 +375,12 @@ const GameSection = () => {
                   )}
 
                   <button
-                    onClick={resetSnakeGame}
-                    className="w-full flex items-center justify-center space-x-2 bg-terminal-border text-terminal-text py-3 rounded-lg hover:bg-terminal-border/80 transition-colors font-mono"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      resetSnakeGame();
+                    }}
+                    className="w-full flex items-center justify-center space-x-2 bg-gray-700 text-gray-200 py-3 rounded-lg hover:bg-gray-600 transition-colors font-mono"
+                    type="button"
                   >
                     <RotateCcw className="w-4 h-4" />
                     <span>Reset</span>
@@ -367,9 +388,9 @@ const GameSection = () => {
                 </div>
 
                 {snakeGame.gameOver && (
-                  <div className="bg-terminal-red/20 border border-terminal-red rounded-lg p-4 text-center">
-                    <div className="text-terminal-red font-mono mb-2">Game Over!</div>
-                    <div className="text-terminal-text/80 text-sm">Final Score: {snakeGame.score}</div>
+                  <div className="bg-red-500/20 border border-red-500 rounded-lg p-4 text-center">
+                    <div className="text-red-400 font-mono mb-2">Game Over!</div>
+                    <div className="text-gray-400 text-sm">Final Score: {snakeGame.score}</div>
                   </div>
                 )}
               </div>
@@ -379,15 +400,19 @@ const GameSection = () => {
 
         {/* Memory Game */}
         {activeGame === 'memory' && (
-          <div className="bg-terminal-bg/90 rounded-2xl border border-terminal-border p-8 backdrop-blur-md">
+          <div className="bg-black/90 rounded-2xl border border-gray-700 p-8 backdrop-blur-md">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold text-terminal-blue font-mono">Memory Matrix</h3>
+              <h3 className="text-2xl font-bold text-blue-400 font-mono">Memory Matrix</h3>
               <div className="flex items-center space-x-4">
-                <div className="text-terminal-yellow font-mono">Score: {memoryGame.score}</div>
-                <div className="text-terminal-text/60 font-mono">Moves: {memoryGame.moves}</div>
+                <div className="text-yellow-400 font-mono">Score: {memoryGame.score}</div>
+                <div className="text-gray-400 font-mono">Moves: {memoryGame.moves}</div>
                 <button
-                  onClick={() => setActiveGame(null)}
-                  className="px-4 py-2 bg-terminal-border rounded-lg hover:bg-terminal-border/80 transition-colors"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setActiveGame(null);
+                  }}
+                  className="px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+                  type="button"
                 >
                   Exit
                 </button>
@@ -399,13 +424,17 @@ const GameSection = () => {
                 {memoryGame.cards.map((number, index) => (
                   <button
                     key={index}
-                    onClick={() => flipCard(index)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      flipCard(index);
+                    }}
                     className={`aspect-square rounded-lg border-2 transition-all duration-300 ${
                       memoryGame.flipped.includes(index) || memoryGame.matched.includes(index)
-                        ? 'bg-terminal-blue border-terminal-blue text-terminal-bg'
-                        : 'bg-terminal-bg border-terminal-border hover:border-terminal-blue'
+                        ? 'bg-blue-400 border-blue-400 text-black'
+                        : 'bg-black border-gray-700 hover:border-blue-400'
                     }`}
                     disabled={memoryGame.flipped.length === 2}
+                    type="button"
                   >
                     {(memoryGame.flipped.includes(index) || memoryGame.matched.includes(index)) && (
                       <span className="text-2xl font-bold font-mono">{number}</span>
@@ -416,8 +445,12 @@ const GameSection = () => {
 
               <div className="flex justify-center space-x-4">
                 <button
-                  onClick={initMemoryGame}
-                  className="flex items-center space-x-2 bg-terminal-blue text-terminal-bg px-6 py-3 rounded-lg hover:bg-terminal-blue/90 transition-colors font-mono"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    initMemoryGame();
+                  }}
+                  className="flex items-center space-x-2 bg-blue-400 text-black px-6 py-3 rounded-lg hover:bg-blue-300 transition-colors font-mono"
+                  type="button"
                 >
                   <RotateCcw className="w-4 h-4" />
                   <span>New Game</span>
@@ -425,9 +458,9 @@ const GameSection = () => {
               </div>
 
               {memoryGame.matched.length === memoryGame.cards.length && (
-                <div className="mt-6 bg-terminal-green/20 border border-terminal-green rounded-lg p-4 text-center">
-                  <div className="text-terminal-green font-mono mb-2">Matrix Decoded!</div>
-                  <div className="text-terminal-text/80 text-sm">
+                <div className="mt-6 bg-green-400/20 border border-green-400 rounded-lg p-4 text-center">
+                  <div className="text-green-400 font-mono mb-2">Matrix Decoded!</div>
+                  <div className="text-gray-400 text-sm">
                     Score: {memoryGame.score} | Moves: {memoryGame.moves}
                   </div>
                 </div>
@@ -438,12 +471,16 @@ const GameSection = () => {
 
         {/* Reaction Game */}
         {activeGame === 'reaction' && (
-          <div className="bg-terminal-bg/90 rounded-2xl border border-terminal-border p-8 backdrop-blur-md">
+          <div className="bg-black/90 rounded-2xl border border-gray-700 p-8 backdrop-blur-md">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold text-terminal-purple font-mono">Reflex Optimizer</h3>
+              <h3 className="text-2xl font-bold text-purple-400 font-mono">Reflex Optimizer</h3>
               <button
-                onClick={() => setActiveGame(null)}
-                className="px-4 py-2 bg-terminal-border rounded-lg hover:bg-terminal-border/80 transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveGame(null);
+                }}
+                className="px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+                type="button"
               >
                 Exit
               </button>
@@ -453,10 +490,10 @@ const GameSection = () => {
               <div
                 className={`w-64 h-64 mx-auto mb-8 rounded-full border-4 cursor-pointer transition-all duration-300 flex items-center justify-center text-xl font-mono ${
                   reactionGame.isWaiting
-                    ? 'bg-terminal-orange border-terminal-orange animate-pulse'
+                    ? 'bg-orange-400 border-orange-400 animate-pulse'
                     : reactionGame.canClick
-                      ? 'bg-terminal-green border-terminal-green animate-ping'
-                      : 'bg-terminal-bg border-terminal-border hover:border-terminal-purple'
+                      ? 'bg-green-400 border-green-400 animate-ping'
+                      : 'bg-black border-gray-700 hover:border-purple-400'
                 }`}
                 onClick={handleReactionClick}
               >
@@ -471,27 +508,31 @@ const GameSection = () => {
 
               <div className="space-y-4">
                 {reactionGame.lastTime > 0 && (
-                  <div className="bg-terminal-border/20 rounded-lg p-4">
-                    <div className="text-terminal-text/60 text-sm mb-1">Last Reaction Time</div>
-                    <div className="text-2xl font-bold text-terminal-green font-mono">
+                  <div className="bg-gray-800/20 rounded-lg p-4">
+                    <div className="text-gray-400 text-sm mb-1">Last Reaction Time</div>
+                    <div className="text-2xl font-bold text-green-400 font-mono">
                       {reactionGame.lastTime}ms
                     </div>
                   </div>
                 )}
 
                 {reactionGame.bestTime > 0 && (
-                  <div className="bg-terminal-border/20 rounded-lg p-4">
-                    <div className="text-terminal-text/60 text-sm mb-1">Best Time</div>
-                    <div className="text-2xl font-bold text-terminal-yellow font-mono">
+                  <div className="bg-gray-800/20 rounded-lg p-4">
+                    <div className="text-gray-400 text-sm mb-1">Best Time</div>
+                    <div className="text-2xl font-bold text-yellow-400 font-mono">
                       {reactionGame.bestTime}ms
                     </div>
                   </div>
                 )}
 
                 <button
-                  onClick={startReactionTest}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    startReactionTest();
+                  }}
                   disabled={reactionGame.isWaiting || reactionGame.canClick}
-                  className="bg-terminal-purple text-terminal-bg px-8 py-3 rounded-lg hover:bg-terminal-purple/90 transition-colors font-mono disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-purple-400 text-black px-8 py-3 rounded-lg hover:bg-purple-300 transition-colors font-mono disabled:opacity-50 disabled:cursor-not-allowed"
+                  type="button"
                 >
                   New Test
                 </button>
