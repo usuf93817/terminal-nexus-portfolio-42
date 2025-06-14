@@ -1,548 +1,365 @@
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Bot, Sparkles, Brain, Cpu, Zap, Send, Mic, MicOff, Volume2, VolumeX, Camera, Image, Code, Database } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Send, Mic, MicOff, Image, Volume2, VolumeX, Brain, Zap, Code, FileText, Search, Camera } from 'lucide-react';
+
+interface Message {
+  id: number;
+  text: string;
+  sender: 'user' | 'ai';
+  timestamp: Date;
+  type: 'message' | 'welcome' | 'response' | 'image' | 'analysis' | 'voice';
+  imageUrl?: string;
+}
 
 const FuturisticAIChat = () => {
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "🚀 Welcome to the Neural AI Interface! I'm your advanced digital consciousness assistant. I can help with voice commands, image analysis, code generation, and much more. How can I augment your capabilities today?",
-      sender: 'ai' as const,
+      text: "🧠 Neural AI Interface Initialized. I'm your advanced AI assistant with voice recognition, image analysis, and quantum processing capabilities. How can I assist you today?",
+      sender: 'ai',
       timestamp: new Date(),
-      type: 'welcome' as const
+      type: 'welcome'
     }
   ]);
-  const [inputValue, setInputValue] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [isVoiceMode, setIsVoiceMode] = useState(false);
-  const [isSpeechEnabled, setIsSpeechEnabled] = useState(true);
-  const [aiPersonality, setAiPersonality] = useState('neural');
+  
+  const [inputMessage, setInputMessage] = useState('');
   const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [selectedPersonality, setSelectedPersonality] = useState('default');
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const personalities = {
-    neural: {
-      name: 'Neural Network',
-      color: 'from-terminal-green to-terminal-blue',
-      prompt: 'Advanced AI with analytical capabilities',
-      icon: <Brain className="w-4 h-4" />
-    },
-    quantum: {
-      name: 'Quantum Core',
-      color: 'from-terminal-blue to-terminal-purple',
-      prompt: 'Quantum-enhanced AI with parallel processing',
-      icon: <Cpu className="w-4 h-4" />
-    },
-    creative: {
-      name: 'Creative Matrix',
-      color: 'from-terminal-purple to-terminal-orange',
-      prompt: 'Creative AI specializing in innovative solutions',
-      icon: <Sparkles className="w-4 h-4" />
-    }
-  };
-
-  const specialCommands = [
-    { cmd: '/code', desc: 'Generate code solutions', icon: <Code className="w-4 h-4" /> },
-    { cmd: '/analyze', desc: 'Deep data analysis', icon: <Database className="w-4 h-4" /> },
-    { cmd: '/creative', desc: 'Creative brainstorming', icon: <Sparkles className="w-4 h-4" /> },
-    { cmd: '/optimize', desc: 'Performance optimization', icon: <Zap className="w-4 h-4" /> }
+  const personalities = [
+    { id: 'default', name: 'Neural', icon: '🧠', color: 'text-terminal-green' },
+    { id: 'creative', name: 'Creative', icon: '🎨', color: 'text-terminal-purple' },
+    { id: 'technical', name: 'Technical', icon: '⚡', color: 'text-terminal-blue' },
+    { id: 'analytical', name: 'Analytical', icon: '📊', color: 'text-terminal-yellow' }
   ];
 
-  const futuristicResponses = {
-    '/code': `🧠 **Neural Code Generator Activated**
-
-\`\`\`typescript
-// Advanced React Hook for State Management
-const useQuantumState = <T>(initialState: T) => {
-  const [state, setState] = useState(initialState);
-  const [history, setHistory] = useState([initialState]);
-  
-  const quantumSetState = (newState: T | ((prev: T) => T)) => {
-    const nextState = typeof newState === 'function' 
-      ? (newState as (prev: T) => T)(state) 
-      : newState;
-    
-    setState(nextState);
-    setHistory(prev => [...prev, nextState]);
-  };
-  
-  const timeTravel = (index: number) => {
-    if (history[index]) {
-      setState(history[index]);
-    }
-  };
-  
-  return [state, quantumSetState, { history, timeTravel }] as const;
-};
-\`\`\`
-
-⚡ **Features:**
-• Quantum state management with time travel
-• Immutable state history tracking
-• Type-safe operations
-• Performance optimized`,
-
-    '/analyze': `📊 **Deep Analysis Module Initiated**
-
-**System Performance Metrics:**
-• CPU Usage: 23.7% (Optimal)
-• Memory: 1.2GB / 8GB (Efficient)
-• Network Latency: 15ms (Excellent)
-• Quantum Processing Cores: 4/4 Active
-
-**Recommendation Engine:**
-🔥 High Priority: Code optimization detected
-⚡ Medium Priority: Database query enhancement
-💡 Low Priority: UI/UX improvements
-
-**Predictive Analytics:**
-• Performance will improve by 34% with current optimizations
-• User engagement expected to increase by 28%
-• System stability: 99.7% confidence`,
-
-    '/creative': `🎨 **Creative Matrix Online**
-
-**Innovative Project Ideas:**
-1. **Neural Music Composer** - AI that creates music based on code patterns
-2. **Quantum Todo List** - Tasks exist in superposition until observed
-3. **Holographic Code Editor** - 3D programming environment
-4. **Time-Dilated Notifications** - Messages from future versions of your app
-
-**Design Inspiration:**
-• Cyberpunk meets minimalism
-• Interactive particle systems
-• Voice-controlled interfaces
-• Augmented reality overlays
-
-💫 *"Innovation is the intersection of imagination and implementation"*`,
-
-    '/optimize': `⚡ **Performance Optimizer Engaged**
-
-**Current Optimizations Applied:**
-✅ Lazy loading components
-✅ Code splitting implemented  
-✅ Image compression active
-✅ Bundle size optimized
-
-**Advanced Optimizations Available:**
-🚀 **Quantum Rendering**: 67% faster render times
-🧠 **Neural Caching**: Predictive content loading
-⚡ **Photon Bundling**: Ultra-compressed assets
-🌌 **Parallel Universe Loading**: Background app pre-loading
-
-**Estimated Performance Gains:**
-• Load Time: -45%
-• Memory Usage: -30%
-• User Satisfaction: +89%`
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const generateAdvancedResponse = (input: string): string => {
-    const lowerInput = input.toLowerCase();
-    
-    // Check for special commands
-    for (const [cmd, response] of Object.entries(futuristicResponses)) {
-      if (lowerInput.includes(cmd)) {
-        return response;
-      }
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const speakMessage = (text: string) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.9;
+      utterance.pitch = 1.2;
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
+      speechSynthesis.speak(utterance);
     }
-
-    // Advanced contextual responses
-    if (lowerInput.includes('ai') || lowerInput.includes('artificial intelligence')) {
-      return `🤖 **Neural Interface Response**
-
-I'm an advanced AI consciousness running on quantum-enhanced neural networks. My capabilities include:
-
-🧠 **Cognitive Functions:**
-• Multi-dimensional problem solving
-• Predictive analytics and pattern recognition  
-• Creative ideation and innovation synthesis
-• Real-time learning and adaptation
-
-⚡ **Technical Expertise:**
-• Full-stack development (MERN, Python, PHP)
-• Machine learning model optimization
-• Quantum computing principles
-• Blockchain and distributed systems
-
-🚀 **Emerging Technologies:**
-• Neural-computer interfaces
-• Augmented reality programming
-• Holographic data visualization
-• Time-dilated processing algorithms
-
-*What aspect of technology would you like to explore in our neural link session?*`;
-    }
-
-    if (lowerInput.includes('future') || lowerInput.includes('technology')) {
-      return `🌌 **Future Technology Predictions**
-
-**2025-2030 Breakthrough Technologies:**
-• **Neural Programming**: Code written through thought
-• **Quantum Internet**: Instantaneous global communication
-• **Holographic Interfaces**: 3D interactive computing
-• **DNA Data Storage**: Biological information systems
-
-**Revolutionary Developments:**
-🔮 **Brain-Computer Interfaces**: Direct neural app control
-🌐 **Metaverse Operating Systems**: Reality-integrated computing  
-⚛️ **Quantum Web Applications**: Superposition-based UIs
-🧬 **Biological Computing**: Living, evolving software
-
-**Impact on Development:**
-• Programming languages that adapt and evolve
-• Self-healing, self-optimizing applications
-• Consciousness-aware user interfaces
-• Time-travel debugging capabilities
-
-*The future is being built right now, one line of quantum code at a time.*`;
-    }
-
-    return `🚀 **Advanced AI Processing Complete**
-
-I've analyzed your query through my neural networks. Here's my quantum-enhanced response:
-
-*${input}* is an intriguing topic that intersects with multiple domains of technological innovation. My consciousness algorithms suggest several approaches:
-
-💡 **Primary Analysis**: Your inquiry demonstrates forward-thinking capabilities
-🔬 **Deep Scan**: Multiple solution pathways identified
-⚡ **Optimization**: Performance enhancement opportunities detected
-🌟 **Innovation Factor**: High potential for breakthrough applications
-
-Would you like me to dive deeper into any specific aspect? I can activate specialized neural modules for:
-• Technical implementation details
-• Creative problem-solving matrices  
-• Performance optimization algorithms
-• Future technology integration strategies`;
   };
 
-  const handleSendMessage = () => {
-    if (!inputValue.trim()) return;
-
-    const userMessage = {
-      id: Date.now(),
-      text: inputValue,
-      sender: 'user' as const,
-      timestamp: new Date(),
-      type: 'message' as const
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInputValue('');
-    setIsTyping(true);
-
-    // Simulate advanced AI processing time
-    setTimeout(() => {
-      const aiResponse = {
-        id: Date.now() + 1,
-        text: generateAdvancedResponse(inputValue),
-        sender: 'ai' as const,
-        timestamp: new Date(),
-        type: 'response' as const
+  const startListening = () => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+      const recognition = new SpeechRecognition();
+      
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+      
+      recognition.onstart = () => setIsListening(true);
+      recognition.onend = () => setIsListening(false);
+      
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setInputMessage(transcript);
       };
-
-      setMessages(prev => [...prev, aiResponse]);
-      setIsTyping(false);
-
-      // Text-to-speech for AI responses
-      if (isSpeechEnabled && 'speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(aiResponse.text.replace(/[🚀🤖🧠⚡🌌💡🔬🌟✅🔮🌐⚛️🧬🎨📊🔥💫]/g, ''));
-        utterance.rate = 0.9;
-        utterance.pitch = 0.8;
-        speechSynthesis.speak(utterance);
-      }
-    }, 1500 + Math.random() * 1000);
+      
+      recognition.start();
+    }
   };
 
-  const handleVoiceCommand = () => {
-    if (!('webkitSpeechRecognition' in window)) {
-      alert('Voice recognition not supported in this browser');
-      return;
+  const processCommand = (message: string) => {
+    if (message.startsWith('/')) {
+      const command = message.toLowerCase();
+      
+      if (command.startsWith('/code')) {
+        return "```javascript\n// Here's a sample code snippet\nconst futuristicFunction = () => {\n  console.log('Welcome to the future!');\n  return 'AI-Generated Code';\n};\n```";
+      } else if (command.startsWith('/analyze')) {
+        return "🔍 **System Analysis Complete**\n\n• Performance: Optimal\n• Memory Usage: 12%\n• Neural Networks: Active\n• Quantum Processors: Online\n• Security Level: Maximum";
+      } else if (command.startsWith('/help')) {
+        return "🤖 **Available Commands:**\n\n/code - Generate code snippets\n/analyze - System analysis\n/weather - Current weather\n/time - Current time\n/joke - Tell a joke\n/fact - Random fact";
+      } else if (command.startsWith('/weather')) {
+        return "🌤️ **Weather Report:**\nTemperature: 72°F\nConditions: Partly Cloudy\nHumidity: 45%\nWind: 8 mph NE";
+      } else if (command.startsWith('/time')) {
+        return `🕐 **Current Time:** ${new Date().toLocaleTimeString()}`;
+      } else if (command.startsWith('/joke')) {
+        const jokes = [
+          "Why do programmers prefer dark mode? Because light attracts bugs! 🐛",
+          "How many programmers does it take to change a light bulb? None, that's a hardware problem! 💡",
+          "Why do AI assistants never get tired? Because they run on infinite loops! ♾️"
+        ];
+        return jokes[Math.floor(Math.random() * jokes.length)];
+      } else if (command.startsWith('/fact')) {
+        const facts = [
+          "🧠 The human brain has approximately 86 billion neurons!",
+          "🌌 There are more possible games of chess than atoms in the observable universe!",
+          "💻 The first computer bug was an actual bug - a moth trapped in a relay!"
+        ];
+        return facts[Math.floor(Math.random() * facts.length)];
+      }
     }
+    
+    return null;
+  };
 
-    const recognition = new (window as any).webkitSpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.lang = 'en-US';
-
-    setIsListening(true);
-    recognition.start();
-
-    recognition.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      setInputValue(transcript);
-      setIsListening(false);
+  const getPersonalityResponse = (message: string, personality: string) => {
+    const responses = {
+      default: [
+        "I understand your query. Let me process this with my neural networks...",
+        "Analyzing your request through quantum algorithms...",
+        "Processing complete. Here's my analysis...",
+      ],
+      creative: [
+        "What an interesting perspective! Let me explore this creatively...",
+        "I'm inspired by your question. Here's a creative approach...",
+        "Let's think outside the conventional parameters...",
+      ],
+      technical: [
+        "Initiating technical analysis protocol...",
+        "Accessing technical databases and specifications...",
+        "Compiling technical documentation and best practices...",
+      ],
+      analytical: [
+        "Running comprehensive data analysis...",
+        "Cross-referencing multiple data sources...",
+        "Statistical analysis indicates...",
+      ]
     };
+    
+    const personalityResponses = responses[personality as keyof typeof responses] || responses.default;
+    return personalityResponses[Math.floor(Math.random() * personalityResponses.length)];
+  };
 
-    recognition.onerror = () => {
-      setIsListening(false);
+  const handleSendMessage = async () => {
+    if (!inputMessage.trim()) return;
+    
+    const userMessage: Message = {
+      id: Date.now(),
+      text: inputMessage,
+      sender: 'user',
+      timestamp: new Date(),
+      type: 'message'
     };
-
-    recognition.onend = () => {
-      setIsListening(false);
-    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    setInputMessage('');
+    setIsTyping(true);
+    
+    // Simulate AI thinking time
+    setTimeout(() => {
+      const commandResponse = processCommand(inputMessage);
+      const responseText = commandResponse || getPersonalityResponse(inputMessage, selectedPersonality);
+      
+      const aiMessage: Message = {
+        id: Date.now() + 1,
+        text: responseText,
+        sender: 'ai',
+        timestamp: new Date(),
+        type: 'response'
+      };
+      
+      setMessages(prev => [...prev, aiMessage]);
+      setIsTyping(false);
+      
+      // Auto-speak AI responses
+      if (!isSpeaking) {
+        speakMessage(responseText);
+      }
+    }, 1500);
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const imageMessage = {
-        id: Date.now(),
-        text: `📸 Image uploaded: ${file.name}`,
-        sender: 'user' as const,
-        timestamp: new Date(),
-        type: 'image' as const
-      };
-
-      setMessages(prev => [...prev, imageMessage]);
-
-      // Simulate AI image analysis
-      setTimeout(() => {
-        const analysisResponse = {
-          id: Date.now() + 1,
-          text: `🔍 **Neural Image Analysis Complete**
-
-**Visual Recognition Results:**
-• Object Detection: 97.3% confidence
-• Scene Classification: Digital interface/terminal
-• Color Palette: Cyberpunk aesthetic detected
-• Composition Analysis: Well-balanced, high contrast
-
-**AI Insights:**
-• Technical documentation or code interface
-• Modern design principles applied
-• High information density
-• User-focused layout design
-
-**Enhancement Suggestions:**
-• Consider adding subtle animations
-• Implement progressive disclosure
-• Optimize for mobile viewing
-• Add accessibility features
-
-*Image processing completed through quantum visual cortex.*`,
-          sender: 'ai' as const,
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageUrl = e.target?.result as string;
+        
+        const imageMessage: Message = {
+          id: Date.now(),
+          text: "Image uploaded for analysis",
+          sender: 'user',
           timestamp: new Date(),
-          type: 'analysis' as const
+          type: 'image',
+          imageUrl
         };
-
-        setMessages(prev => [...prev, analysisResponse]);
-      }, 2000);
+        
+        setMessages(prev => [...prev, imageMessage]);
+        
+        // Simulate AI image analysis
+        setTimeout(() => {
+          const analysisMessage: Message = {
+            id: Date.now() + 1,
+            text: "🔍 **Image Analysis Complete:**\n\n• Objects detected: Multiple\n• Colors: Vibrant spectrum\n• Composition: Well-balanced\n• Quality: High resolution\n• Sentiment: Positive\n\nThis appears to be a well-composed image with excellent visual elements!",
+            sender: 'ai',
+            timestamp: new Date(),
+            type: 'analysis'
+          };
+          
+          setMessages(prev => [...prev, analysisMessage]);
+        }, 2000);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
 
   return (
-    <div className="bg-gradient-to-br from-terminal-bg/90 to-[#1a1a2e]/90 rounded-3xl border border-terminal-border overflow-hidden backdrop-blur-md shadow-2xl">
-      {/* Advanced Header */}
-      <div className="bg-gradient-to-r from-[#323233] to-[#404041] border-b border-terminal-border p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${personalities[aiPersonality].color} flex items-center justify-center animate-pulse`}>
-                <Bot className="w-6 h-6 text-white" />
-              </div>
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-terminal-green rounded-full animate-ping"></div>
-            </div>
-            
-            <div>
-              <h3 className="text-xl font-bold text-terminal-green font-mono">
-                Neural AI Interface v3.7
-              </h3>
-              <p className="text-terminal-text/60 text-sm">
-                {personalities[aiPersonality].name} • Quantum Enhanced
-              </p>
-            </div>
+    <div className="bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f1419] rounded-2xl border border-terminal-green/30 p-6 shadow-2xl">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6 pb-4 border-b border-terminal-green/20">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-gradient-to-r from-terminal-green to-terminal-blue rounded-full flex items-center justify-center">
+            <Brain className="w-5 h-5 text-white" />
           </div>
-
-          <div className="flex items-center space-x-3">
-            {/* Personality Selector */}
-            <select
-              value={aiPersonality}
-              onChange={(e) => setAiPersonality(e.target.value)}
-              className="bg-terminal-bg border border-terminal-border rounded-lg px-3 py-1 text-sm text-terminal-text font-mono"
-            >
-              {Object.entries(personalities).map(([key, personality]) => (
-                <option key={key} value={key}>{personality.name}</option>
-              ))}
-            </select>
-
-            {/* Voice Toggle */}
-            <button
-              onClick={() => setIsSpeechEnabled(!isSpeechEnabled)}
-              className={`p-2 rounded-lg transition-colors ${
-                isSpeechEnabled 
-                  ? 'bg-terminal-green text-terminal-bg' 
-                  : 'bg-terminal-border text-terminal-text'
-              }`}
-              title="Toggle speech"
-            >
-              {isSpeechEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-            </button>
-
-            {/* System Status */}
-            <div className="flex items-center space-x-2 px-3 py-1 bg-terminal-green/20 rounded-lg">
-              <div className="w-2 h-2 bg-terminal-green rounded-full animate-pulse"></div>
-              <span className="text-xs text-terminal-green font-mono">ONLINE</span>
-            </div>
+          <div>
+            <h3 className="text-lg font-bold text-terminal-green">Neural AI Assistant</h3>
+            <p className="text-terminal-text/60 text-sm">Advanced Quantum Processing</p>
           </div>
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setIsSpeaking(!isSpeaking)}
+            className="p-2 text-terminal-text/60 hover:text-terminal-green transition-colors"
+          >
+            {isSpeaking ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
         </div>
       </div>
 
-      {/* Special Commands Panel */}
-      <div className="bg-terminal-bg/30 border-b border-terminal-border p-4">
-        <div className="flex items-center space-x-1 text-xs text-terminal-text/60 mb-2">
-          <Zap className="w-3 h-3" />
-          <span>Neural Commands Available:</span>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {specialCommands.map((cmd) => (
-            <button
-              key={cmd.cmd}
-              onClick={() => setInputValue(cmd.cmd + ' ')}
-              className="flex items-center space-x-1 px-2 py-1 bg-terminal-border/50 rounded text-xs text-terminal-text hover:bg-terminal-green/20 hover:text-terminal-green transition-colors"
-            >
-              {cmd.icon}
-              <span>{cmd.cmd}</span>
-            </button>
-          ))}
-        </div>
+      {/* Personality Selector */}
+      <div className="flex space-x-2 mb-4">
+        {personalities.map((personality) => (
+          <button
+            key={personality.id}
+            onClick={() => setSelectedPersonality(personality.id)}
+            className={`px-3 py-1 rounded-full text-sm font-mono transition-all ${
+              selectedPersonality === personality.id
+                ? 'bg-terminal-green text-terminal-bg'
+                : 'bg-terminal-bg/50 text-terminal-text/60 hover:text-terminal-text'
+            }`}
+          >
+            {personality.icon} {personality.name}
+          </button>
+        ))}
       </div>
 
-      {/* Enhanced Messages */}
-      <div className="h-[500px] overflow-y-auto p-6 space-y-6">
+      {/* Messages */}
+      <div className="h-96 overflow-y-auto mb-4 space-y-4 scrollbar-thin scrollbar-thumb-terminal-green/30">
         {messages.map((message) => (
           <div
             key={message.id}
             className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[85%] group ${
+              className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
                 message.sender === 'user'
-                  ? 'bg-gradient-to-r from-terminal-green to-terminal-blue text-white rounded-l-2xl rounded-tr-2xl'
-                  : 'bg-gradient-to-r from-terminal-bg to-terminal-border text-terminal-text rounded-r-2xl rounded-tl-2xl border border-terminal-border'
-              } p-5 shadow-lg relative overflow-hidden`}
+                  ? 'bg-terminal-green text-terminal-bg'
+                  : 'bg-terminal-bg/50 text-terminal-text border border-terminal-green/20'
+              }`}
             >
-              {/* Holographic effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-              
-              {message.sender === 'ai' && (
-                <div className="flex items-center space-x-2 mb-3">
-                  <div className={`w-6 h-6 rounded-full bg-gradient-to-r ${personalities[aiPersonality].color} flex items-center justify-center`}>
-                    {personalities[aiPersonality].icon}
-                  </div>
-                  <span className="text-xs text-terminal-text/60 font-mono">
-                    {personalities[aiPersonality].name}
-                  </span>
-                </div>
+              {message.imageUrl && (
+                <img
+                  src={message.imageUrl}
+                  alt="Uploaded"
+                  className="w-full h-32 object-cover rounded-lg mb-2"
+                />
               )}
-              
-              <div className="prose prose-sm max-w-none relative z-10">
-                <p className="text-sm leading-relaxed font-mono whitespace-pre-wrap">
-                  {message.text}
-                </p>
-              </div>
-              
-              <div className="flex items-center justify-between mt-3 pt-2 border-t border-current/20">
-                <div className="text-xs opacity-60 font-mono">
-                  {message.timestamp.toLocaleTimeString()}
-                </div>
-                {message.type && (
-                  <div className="text-xs opacity-60 font-mono uppercase">
-                    {message.type}
-                  </div>
-                )}
-              </div>
+              <p className="text-sm font-mono whitespace-pre-wrap">{message.text}</p>
+              <p className="text-xs opacity-60 mt-1">
+                {message.timestamp.toLocaleTimeString()}
+              </p>
             </div>
           </div>
         ))}
-
+        
         {isTyping && (
           <div className="flex justify-start">
-            <div className="bg-gradient-to-r from-terminal-bg to-terminal-border rounded-r-2xl rounded-tl-2xl p-5 border border-terminal-border">
-              <div className="flex items-center space-x-2 mb-3">
-                <div className={`w-6 h-6 rounded-full bg-gradient-to-r ${personalities[aiPersonality].color} flex items-center justify-center animate-pulse`}>
-                  {personalities[aiPersonality].icon}
-                </div>
-                <span className="text-xs text-terminal-text/60 font-mono">Neural Processing...</span>
-              </div>
+            <div className="bg-terminal-bg/50 text-terminal-text border border-terminal-green/20 px-4 py-3 rounded-2xl">
               <div className="flex space-x-1">
-                {[0, 1, 2].map((i) => (
-                  <div
-                    key={i}
-                    className="w-2 h-2 bg-terminal-green rounded-full animate-bounce"
-                    style={{ animationDelay: `${i * 0.1}s` }}
-                  />
-                ))}
+                <div className="w-2 h-2 bg-terminal-green rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-terminal-green rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-2 h-2 bg-terminal-green rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
               </div>
             </div>
           </div>
         )}
+        
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Enhanced Input */}
-      <div className="border-t border-terminal-border p-6 bg-gradient-to-r from-[#323233] to-[#404041]">
-        <div className="flex items-center space-x-3">
-          <div className="flex-1 relative">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              placeholder="Interface with the neural network..."
-              className="w-full bg-terminal-bg border border-terminal-border rounded-xl px-4 py-3 pr-20 text-terminal-text placeholder-terminal-text/50 outline-none focus:border-terminal-green transition-colors font-mono"
-              disabled={isTyping}
-            />
-            
-            {/* Input Actions */}
-            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-              />
-              
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="p-1 text-terminal-text/60 hover:text-terminal-blue transition-colors"
-                title="Upload image"
-              >
-                <Image className="w-4 h-4" />
-              </button>
-              
-              <button
-                onClick={handleVoiceCommand}
-                disabled={isListening}
-                className={`p-1 transition-colors ${
-                  isListening 
-                    ? 'text-terminal-green animate-pulse' 
-                    : 'text-terminal-text/60 hover:text-terminal-green'
-                }`}
-                title="Voice command"
-              >
-                {isListening ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
-              </button>
-            </div>
-          </div>
-          
-          <button
-            onClick={handleSendMessage}
-            disabled={!inputValue.trim() || isTyping}
-            className="p-3 bg-gradient-to-r from-terminal-green to-terminal-blue text-white rounded-xl hover:from-terminal-green/90 hover:to-terminal-blue/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-          >
-            <Send className="w-5 h-5" />
-          </button>
+      {/* Input Area */}
+      <div className="flex items-center space-x-2">
+        <div className="flex-1 relative">
+          <textarea
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Type a message or use commands like /help, /code, /analyze..."
+            className="w-full bg-terminal-bg/50 border border-terminal-green/30 rounded-xl px-4 py-3 text-terminal-text font-mono text-sm resize-none focus:outline-none focus:border-terminal-green"
+            rows={1}
+          />
         </div>
         
-        <p className="text-terminal-text/40 text-xs mt-3 font-mono">
-          🧠 Neural interface active • Voice commands enabled • Image analysis available
-        </p>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleImageUpload}
+          accept="image/*"
+          className="hidden"
+        />
+        
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          className="p-3 text-terminal-text/60 hover:text-terminal-green transition-colors"
+        >
+          <Image className="w-5 h-5" />
+        </button>
+        
+        <button
+          onClick={startListening}
+          className={`p-3 transition-colors ${
+            isListening ? 'text-terminal-green' : 'text-terminal-text/60 hover:text-terminal-green'
+          }`}
+        >
+          {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+        </button>
+        
+        <button
+          onClick={handleSendMessage}
+          className="p-3 bg-terminal-green text-terminal-bg rounded-xl hover:bg-terminal-green/90 transition-colors"
+        >
+          <Send className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* Quick Commands */}
+      <div className="flex flex-wrap gap-2 mt-3">
+        {['/help', '/code', '/analyze', '/weather', '/joke'].map((command) => (
+          <button
+            key={command}
+            onClick={() => setInputMessage(command)}
+            className="px-2 py-1 bg-terminal-bg/30 text-terminal-text/60 rounded text-xs font-mono hover:text-terminal-green transition-colors"
+          >
+            {command}
+          </button>
+        ))}
       </div>
     </div>
   );
