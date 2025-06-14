@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
@@ -26,6 +25,7 @@ import WeatherWidget from '../components/WeatherWidget';
 import GitHubStats from '../components/GitHubStats';
 import GameSection from '../components/GameSection';
 import FuturisticAIChat from '../components/FuturisticAIChat';
+import SocialSidebar from '../components/SocialSidebar';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -195,6 +195,7 @@ const Index = () => {
       <FloatingNav activeSection={activeSection} setActiveSection={setActiveSection} />
       <ThemeSwitcher />
       <WeatherWidget />
+      <SocialSidebar />
       
       {/* Main Header */}
       <Header activeSection={activeSection} setActiveSection={setActiveSection} />
