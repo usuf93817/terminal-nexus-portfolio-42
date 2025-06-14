@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
@@ -23,6 +24,8 @@ import ThemeSwitcher from '../components/ThemeSwitcher';
 import SkillQuiz from '../components/SkillQuiz';
 import WeatherWidget from '../components/WeatherWidget';
 import GitHubStats from '../components/GitHubStats';
+import GameSection from '../components/GameSection';
+import FuturisticAIChat from '../components/FuturisticAIChat';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -72,12 +75,15 @@ const Index = () => {
               <InteractiveTerminal />
             </ScrollReveal>
             <ScrollReveal direction="up" delay={1200}>
-              <SkillQuiz />
+              <GameSection />
             </ScrollReveal>
             <ScrollReveal direction="left" delay={1400}>
-              <GitHubStats />
+              <SkillQuiz />
             </ScrollReveal>
             <ScrollReveal direction="right" delay={1600}>
+              <GitHubStats />
+            </ScrollReveal>
+            <ScrollReveal direction="up" delay={1800}>
               <TechStack />
             </ScrollReveal>
           </>
@@ -118,9 +124,27 @@ const Index = () => {
         );
       case 'ai-assistant':
         return (
-          <ScrollReveal direction="up">
-            <AIAssistant />
-          </ScrollReveal>
+          <>
+            <ScrollReveal direction="up">
+              <AIAssistant />
+            </ScrollReveal>
+            <ScrollReveal direction="up" delay={300}>
+              <div className="py-20 px-6">
+                <div className="max-w-5xl mx-auto">
+                  <div className="text-center mb-12">
+                    <h2 className="text-4xl font-bold text-terminal-green mb-6 font-mono">
+                      <span className="syntax-keyword">class</span> <span className="syntax-function">AdvancedAI</span> {"{"}
+                    </h2>
+                    <p className="text-terminal-text/80 text-lg">
+                      <span className="syntax-comment">/* Enhanced neural interface with voice, image, and quantum processing */</span>
+                    </p>
+                  </div>
+                  <FuturisticAIChat />
+                  <p className="text-terminal-green text-4xl font-bold mt-8 text-center">{"}"}</p>
+                </div>
+              </div>
+            </ScrollReveal>
+          </>
         );
       default:
         return (
