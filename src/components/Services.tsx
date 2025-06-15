@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const Services = () => {
   const { toast } = useToast();
@@ -116,110 +116,167 @@ const Services = () => {
     toast({
       title: `${service.name} - Detailed Information`,
       description: (
-        <div className="space-y-2 text-sm">
-          <p><strong>Overview:</strong> {service.details.overview}</p>
-          <p><strong>Key Features:</strong> {service.details.features.join(', ')}</p>
-          <p><strong>Timeline:</strong> {service.details.timeline}</p>
-          <p><strong>Pricing:</strong> {service.details.pricing}</p>
+        <div className="space-y-3 text-sm">
+          <div>
+            <p className="font-semibold text-terminal-green">Overview:</p>
+            <p className="text-terminal-text/90">{service.details.overview}</p>
+          </div>
+          <div>
+            <p className="font-semibold text-terminal-blue">Key Features:</p>
+            <ul className="list-disc list-inside text-terminal-text/90 space-y-1">
+              {service.details.features.map((feature, index) => (
+                <li key={index}>{feature}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="font-semibold text-terminal-yellow">Timeline:</p>
+              <p className="text-terminal-text/90">{service.details.timeline}</p>
+            </div>
+            <div>
+              <p className="font-semibold text-terminal-purple">Pricing:</p>
+              <p className="text-terminal-text/90">{service.details.pricing}</p>
+            </div>
+          </div>
         </div>
       ),
-      duration: 8000,
+      duration: 10000,
     });
   };
 
   return (
-    <section className="min-h-screen py-20 px-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <div className="mb-16">
-          <h2 className="text-4xl font-bold text-terminal-green mb-6">
-            <span className="syntax-keyword">export</span> <span className="syntax-keyword">const</span>{' '}
-            <span className="syntax-function">services</span> = [
-          </h2>
-          <p className="text-terminal-text/80 text-lg max-w-3xl pl-6">
-            <span className="syntax-comment">/*</span><br />
-            <span className="syntax-comment"> * Comprehensive technology solutions tailored to your needs.</span><br />
-            <span className="syntax-comment"> * From concept to deployment, we deliver excellence.</span><br />
-            <span className="syntax-comment"> */</span>
-          </p>
-        </div>
+    <TooltipProvider>
+      <section className="min-h-screen py-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Section Header */}
+          <div className="mb-16">
+            <h2 className="text-4xl font-bold text-terminal-green mb-6">
+              <span className="syntax-keyword">export</span> <span className="syntax-keyword">const</span>{' '}
+              <span className="syntax-function">services</span> = [
+            </h2>
+            <p className="text-terminal-text/80 text-lg max-w-3xl pl-6">
+              <span className="syntax-comment">/*</span><br />
+              <span className="syntax-comment"> * Comprehensive technology solutions tailored to your needs.</span><br />
+              <span className="syntax-comment"> * From concept to deployment, we deliver excellence.</span><br />
+              <span className="syntax-comment"> */</span>
+            </p>
+          </div>
 
-        {/* Services Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pl-6">
-          {services.map((service, index) => (
-            <div
-              key={service.name}
-              className="group bg-terminal-bg/50 rounded-lg border border-terminal-border p-6 hover:border-terminal-green transition-all duration-300 hover:shadow-lg hover:shadow-terminal-green/20 animate-float hover:animate-none"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              {/* Service Icon */}
-              <div className={`w-12 h-12 bg-gradient-to-r ${service.color} rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                <span className="text-2xl">{service.icon}</span>
-              </div>
+          {/* Services Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pl-6">
+            {services.map((service, index) => (
+              <Tooltip key={service.name}>
+                <TooltipTrigger asChild>
+                  <div
+                    className="group bg-terminal-bg/50 rounded-lg border border-terminal-border p-6 hover:border-terminal-green transition-all duration-300 hover:shadow-lg hover:shadow-terminal-green/20 animate-float hover:!animate-none cursor-pointer"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                    onClick={() => handleLearnMore(service)}
+                  >
+                    {/* Service Icon */}
+                    <div className={`w-12 h-12 bg-gradient-to-r ${service.color} rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                      <span className="text-2xl">{service.icon}</span>
+                    </div>
 
-              {/* Service Name */}
-              <h3 className="text-lg font-semibold text-terminal-text mb-3 group-hover:text-terminal-green transition-colors">
-                <span className="syntax-string">"{service.name}"</span>
-              </h3>
+                    {/* Service Name */}
+                    <h3 className="text-lg font-semibold text-terminal-text mb-3 group-hover:text-terminal-green transition-colors">
+                      <span className="syntax-string">"{service.name}"</span>
+                    </h3>
 
-              {/* Description */}
-              <p className="text-terminal-text/70 text-sm mb-4 leading-relaxed">
-                <span className="syntax-comment">// {service.description}</span>
-              </p>
-
-              {/* Technologies */}
-              <div className="space-y-2">
-                <p className="text-terminal-yellow text-sm">
-                  <span className="syntax-variable">tech</span>: [
-                </p>
-                <div className="pl-4 space-y-1 max-h-20 overflow-y-auto">
-                  {service.technologies.map((tech, techIndex) => (
-                    <p key={tech} className="text-terminal-text text-xs">
-                      <span className="syntax-string">"{tech}"</span>
-                      {techIndex < service.technologies.length - 1 ? ',' : ''}
+                    {/* Description */}
+                    <p className="text-terminal-text/70 text-sm mb-4 leading-relaxed">
+                      <span className="syntax-comment">// {service.description}</span>
                     </p>
-                  ))}
-                </div>
-                <p className="text-terminal-yellow text-sm">]</p>
-              </div>
 
-              {/* Hover Effect */}
-              <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <button 
-                  onClick={() => handleLearnMore(service)}
-                  className="w-full bg-terminal-green/10 hover:bg-terminal-green/20 text-terminal-green py-2 px-4 rounded text-sm border border-terminal-green/30 hover:border-terminal-green/50 transition-all duration-200"
-                >
-                  <span className="syntax-function">learnMore</span>()
-                </button>
-              </div>
+                    {/* Technologies */}
+                    <div className="space-y-2">
+                      <p className="text-terminal-yellow text-sm">
+                        <span className="syntax-variable">tech</span>: [
+                      </p>
+                      <div className="pl-4 space-y-1 max-h-20 overflow-y-auto">
+                        {service.technologies.map((tech, techIndex) => (
+                          <p key={tech} className="text-terminal-text text-xs">
+                            <span className="syntax-string">"{tech}"</span>
+                            {techIndex < service.technologies.length - 1 ? ',' : ''}
+                          </p>
+                        ))}
+                      </div>
+                      <p className="text-terminal-yellow text-sm">]</p>
+                    </div>
+
+                    {/* Hover Effect */}
+                    <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <button 
+                        className="w-full bg-terminal-green/10 hover:bg-terminal-green/20 text-terminal-green py-2 px-4 rounded text-sm border border-terminal-green/30 hover:border-terminal-green/50 transition-all duration-200"
+                      >
+                        <span className="syntax-function">learnMore</span>()
+                      </button>
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                
+                <TooltipContent side="right" className="max-w-sm p-4 bg-terminal-bg border-terminal-green/30">
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-terminal-green">{service.name} - Detailed Information</h4>
+                    
+                    <div>
+                      <p className="text-xs font-medium text-terminal-blue mb-1">Overview:</p>
+                      <p className="text-xs text-terminal-text/90">{service.details.overview}</p>
+                    </div>
+                    
+                    <div>
+                      <p className="text-xs font-medium text-terminal-yellow mb-1">Key Features:</p>
+                      <div className="grid grid-cols-1 gap-1">
+                        {service.details.features.slice(0, 3).map((feature, index) => (
+                          <p key={index} className="text-xs text-terminal-text/80">• {feature}</p>
+                        ))}
+                        {service.details.features.length > 3 && (
+                          <p className="text-xs text-terminal-text/60">+ {service.details.features.length - 3} more features</p>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 gap-2 pt-2 border-t border-terminal-border/30">
+                      <div>
+                        <p className="text-xs font-medium text-terminal-purple">Timeline: <span className="font-normal text-terminal-text/90">{service.details.timeline}</span></p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium text-terminal-orange">Pricing: <span className="font-normal text-terminal-text/90">{service.details.pricing}</span></p>
+                      </div>
+                    </div>
+                    
+                    <p className="text-xs text-terminal-green/70 italic mt-2">Click for detailed information</p>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </div>
+
+          <p className="text-terminal-green text-4xl font-bold mt-8">];</p>
+
+          {/* Call to Action */}
+          <div className="mt-16 bg-[#1e1e1e] rounded-lg border border-terminal-border p-8 text-center">
+            <h3 className="text-2xl font-semibold text-terminal-green mb-4">
+              <span className="syntax-keyword">ready</span> <span className="syntax-keyword">to</span>{' '}
+              <span className="syntax-function">startProject</span>()?
+            </h3>
+            <p className="text-terminal-text/80 mb-6 max-w-2xl mx-auto">
+              <span className="syntax-comment">
+                // Let's discuss your project requirements and create something amazing together
+              </span>
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button className="bg-terminal-green text-terminal-bg px-8 py-3 rounded-lg font-semibold hover:bg-terminal-green/90 transition-all duration-300 hover:shadow-lg hover:shadow-terminal-green/30">
+                <span className="syntax-function">getQuote</span>()
+              </button>
+              <button className="border border-terminal-green text-terminal-green px-8 py-3 rounded-lg font-semibold hover:bg-terminal-green/10 transition-all duration-300">
+                <span className="syntax-function">viewPortfolio</span>()
+              </button>
             </div>
-          ))}
-        </div>
-
-        <p className="text-terminal-green text-4xl font-bold mt-8">];</p>
-
-        {/* Call to Action */}
-        <div className="mt-16 bg-[#1e1e1e] rounded-lg border border-terminal-border p-8 text-center">
-          <h3 className="text-2xl font-semibold text-terminal-green mb-4">
-            <span className="syntax-keyword">ready</span> <span className="syntax-keyword">to</span>{' '}
-            <span className="syntax-function">startProject</span>()?
-          </h3>
-          <p className="text-terminal-text/80 mb-6 max-w-2xl mx-auto">
-            <span className="syntax-comment">
-              // Let's discuss your project requirements and create something amazing together
-            </span>
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-terminal-green text-terminal-bg px-8 py-3 rounded-lg font-semibold hover:bg-terminal-green/90 transition-all duration-300 hover:shadow-lg hover:shadow-terminal-green/30">
-              <span className="syntax-function">getQuote</span>()
-            </button>
-            <button className="border border-terminal-green text-terminal-green px-8 py-3 rounded-lg font-semibold hover:bg-terminal-green/10 transition-all duration-300">
-              <span className="syntax-function">viewPortfolio</span>()
-            </button>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </TooltipProvider>
   );
 };
 
