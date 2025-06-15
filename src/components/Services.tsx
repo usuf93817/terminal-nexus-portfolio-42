@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -114,34 +115,36 @@ const Services = () => {
 
   const handleLearnMore = (service) => {
     toast({
-      title: `${service.name} - Detailed Information`,
+      title: `${service.name}`,
       description: (
-        <div className="space-y-3 text-sm">
-          <div>
-            <p className="font-semibold text-terminal-green">Overview:</p>
-            <p className="text-terminal-text/90">{service.details.overview}</p>
+        <div className="space-y-4 text-sm max-w-md">
+          <div className="bg-terminal-bg/30 p-3 rounded border-l-2 border-terminal-green">
+            <p className="font-semibold text-terminal-green mb-2">Overview:</p>
+            <p className="text-terminal-text/90 leading-relaxed">{service.details.overview}</p>
           </div>
-          <div>
-            <p className="font-semibold text-terminal-blue">Key Features:</p>
+          
+          <div className="bg-terminal-bg/30 p-3 rounded border-l-2 border-terminal-blue">
+            <p className="font-semibold text-terminal-blue mb-2">Key Features:</p>
             <ul className="list-disc list-inside text-terminal-text/90 space-y-1">
               {service.details.features.map((feature, index) => (
-                <li key={index}>{feature}</li>
+                <li key={index} className="leading-relaxed">{feature}</li>
               ))}
             </ul>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="font-semibold text-terminal-yellow">Timeline:</p>
+          
+          <div className="grid grid-cols-1 gap-3">
+            <div className="bg-terminal-bg/30 p-3 rounded border-l-2 border-terminal-yellow">
+              <p className="font-semibold text-terminal-yellow mb-1">Timeline:</p>
               <p className="text-terminal-text/90">{service.details.timeline}</p>
             </div>
-            <div>
-              <p className="font-semibold text-terminal-purple">Pricing:</p>
+            <div className="bg-terminal-bg/30 p-3 rounded border-l-2 border-terminal-purple">
+              <p className="font-semibold text-terminal-purple mb-1">Pricing:</p>
               <p className="text-terminal-text/90">{service.details.pricing}</p>
             </div>
           </div>
         </div>
       ),
-      duration: 10000,
+      duration: 15000,
     });
   };
 
@@ -217,11 +220,11 @@ const Services = () => {
                 
                 <TooltipContent side="right" className="max-w-sm p-4 bg-terminal-bg border-terminal-green/30">
                   <div className="space-y-3">
-                    <h4 className="font-semibold text-terminal-green">{service.name} - Detailed Information</h4>
+                    <h4 className="font-semibold text-terminal-green">{service.name}</h4>
                     
                     <div>
                       <p className="text-xs font-medium text-terminal-blue mb-1">Overview:</p>
-                      <p className="text-xs text-terminal-text/90">{service.details.overview}</p>
+                      <p className="text-xs text-terminal-text/90 leading-relaxed">{service.details.overview}</p>
                     </div>
                     
                     <div>
