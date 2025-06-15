@@ -66,7 +66,7 @@ const ThemeSwitcher = () => {
     const root = document.documentElement;
     
     try {
-      // Update CSS custom properties with proper fallbacks
+      // Update CSS custom properties
       root.style.setProperty('--terminal-green', theme.primary);
       root.style.setProperty('--terminal-blue', theme.secondary);
       root.style.setProperty('--terminal-yellow', theme.accent);
@@ -98,8 +98,11 @@ const ThemeSwitcher = () => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest('[data-theme-switcher]')) {
-        setIsOpen(false);
+      // Check if target exists and is an element before calling closest
+      if (target && typeof target.closest === 'function') {
+        if (!target.closest('[data-theme-switcher]')) {
+          setIsOpen(false);
+        }
       }
     };
 
@@ -119,14 +122,21 @@ const ThemeSwitcher = () => {
     }
   }, []);
 
+  const handleToggle = () => {
+    console.log('Theme switcher toggle clicked');
+    setIsOpen(!isOpen);
+  };
+
+  const handleThemeSelect = (key: string) => {
+    console.log(`Theme selected: ${key}`);
+    applyTheme(key);
+    setIsOpen(false);
+  };
+
   return (
     <div className="fixed top-20 right-6 z-50" data-theme-switcher>
       <button
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setIsOpen(!isOpen);
-        }}
+        onClick={handleToggle}
         className="p-3 bg-black/90 border border-gray-600 rounded-lg text-green-400 hover:bg-black hover:border-green-400 transition-all duration-300 backdrop-blur-md shadow-lg hover:shadow-xl"
         title="Change Theme"
         type="button"
@@ -144,12 +154,7 @@ const ThemeSwitcher = () => {
             {Object.entries(themes).map(([key, theme]) => (
               <button
                 key={key}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  applyTheme(key);
-                  setIsOpen(false);
-                }}
+                onClick={() => handleThemeSelect(key)}
                 className="w-full p-3 rounded-lg hover:bg-gray-800/50 transition-colors text-left group"
                 type="button"
               >
