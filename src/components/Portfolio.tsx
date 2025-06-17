@@ -1,10 +1,11 @@
-
 import React, { useState } from 'react';
 import { ExternalLink, Github, Eye, Code } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const Portfolio = () => {
   const [selectedProject, setSelectedProject] = useState(0);
   const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
+  const { toast } = useToast();
 
   const projects = [
     {
@@ -36,7 +37,7 @@ app.get('/api/products', async (req, res) => {
     .populate('category')
     .sort({ createdAt: -1 });
   res.json(products);
-});`,
+};`,
       github: "https://github.com/nodexStation",
       live: "#"
     },
@@ -214,6 +215,48 @@ async def process_scraped_data(data_batch):
     ? projects 
     : projects.filter(project => project.category === activeCategory);
 
+  const handleLiveDemo = (project: any) => {
+    if (project.live && project.live !== "#") {
+      window.open(project.live, '_blank', 'noopener,noreferrer');
+    } else {
+      toast({
+        title: "Live Demo",
+        description: (
+          <div className="space-y-2">
+            <p>This project is currently in development.</p>
+            <p>Check out our GitHub for the latest code:</p>
+            <a 
+              href={project.github}
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-terminal-green hover:text-terminal-blue transition-colors"
+            >
+              View on GitHub →
+            </a>
+          </div>
+        ),
+        duration: 5000,
+      });
+    }
+  };
+
+  const handleViewCode = (project: any) => {
+    if (project.github) {
+      window.open(project.github, '_blank', 'noopener,noreferrer');
+      toast({
+        title: "Opening GitHub Repository",
+        description: `Viewing source code for ${project.title}`,
+        duration: 3000,
+      });
+    } else {
+      toast({
+        title: "Code Repository",
+        description: "Source code is currently private or not available.",
+        duration: 3000,
+      });
+    }
+  };
+
   return (
     <section className="min-h-screen py-20 px-6">
       <div className="max-w-6xl mx-auto">
@@ -273,30 +316,32 @@ async def process_scraped_data(data_batch):
                     </span>
                   </div>
                   <div className="flex space-x-2">
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-terminal-text/60 hover:text-terminal-green transition-colors"
-                      onClick={(e) => e.stopPropagation()}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleViewCode(project);
+                      }}
+                      className="text-terminal-text/60 hover:text-terminal-green transition-colors p-1 rounded hover:bg-terminal-green/10"
+                      title="View Code"
                     >
                       <Github className="w-5 h-5" />
-                    </a>
-                    <a
-                      href={project.live}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-terminal-text/60 hover:text-terminal-green transition-colors"
-                      onClick={(e) => e.stopPropagation()}
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleLiveDemo(project);
+                      }}
+                      className="text-terminal-text/60 hover:text-terminal-green transition-colors p-1 rounded hover:bg-terminal-green/10"
+                      title="Live Demo"
                     >
                       <ExternalLink className="w-5 h-5" />
-                    </a>
+                    </button>
                   </div>
                 </div>
                 
                 <p className="text-terminal-text/70 mb-4">{project.description}</p>
                 
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 mb-4">
                   {project.technologies.map((tech) => (
                     <span
                       key={tech}
@@ -305,6 +350,30 @@ async def process_scraped_data(data_batch):
                       {tech}
                     </span>
                   ))}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex space-x-3">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleLiveDemo(project);
+                    }}
+                    className="flex items-center space-x-2 bg-terminal-green text-terminal-bg px-4 py-2 rounded-lg font-semibold hover:bg-terminal-green/90 transition-all duration-300 hover:shadow-lg hover:shadow-terminal-green/30 text-sm"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    <span>Live Demo</span>
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleViewCode(project);
+                    }}
+                    className="flex items-center space-x-2 border border-terminal-green text-terminal-green px-4 py-2 rounded-lg font-semibold hover:bg-terminal-green/10 transition-all duration-300 text-sm"
+                  >
+                    <Github className="w-4 h-4" />
+                    <span>View Code</span>
+                  </button>
                 </div>
               </div>
             ))}
