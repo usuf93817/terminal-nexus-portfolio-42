@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -148,6 +149,62 @@ const Services = () => {
     });
   };
 
+  const handleGetQuote = () => {
+    // Create a mailto link with pre-filled subject and body
+    const subject = encodeURIComponent('Project Quote Request');
+    const body = encodeURIComponent(`Hello NodeX Station,
+
+I'm interested in getting a quote for my project. Here are the details:
+
+Service Required: [Please specify]
+Project Description: [Please describe your project]
+Timeline: [When do you need this completed?]
+Budget Range: [Your budget range]
+
+Please get back to me with a detailed quote.
+
+Best regards,
+[Your Name]`);
+    
+    window.location.href = `mailto:nodexstation@gmail.com?subject=${subject}&body=${body}`;
+    
+    toast({
+      title: "Opening email client...",
+      description: "We're opening your default email client with a pre-filled quote request.",
+      duration: 3000,
+    });
+  };
+
+  const handleViewPortfolio = () => {
+    // Scroll to portfolio section if it exists on the current page
+    const portfolioElement = document.getElementById('portfolio') || 
+                             document.querySelector('[data-section="portfolio"]') ||
+                             document.querySelector('.portfolio');
+    
+    if (portfolioElement) {
+      portfolioElement.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // If no portfolio section found, show a toast with GitHub link
+      toast({
+        title: "Portfolio",
+        description: (
+          <div className="space-y-2">
+            <p>Check out our work on GitHub:</p>
+            <a 
+              href="https://github.com/nodexStation" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-terminal-green hover:text-terminal-blue transition-colors"
+            >
+              github.com/nodexStation →
+            </a>
+          </div>
+        ),
+        duration: 5000,
+      });
+    }
+  };
+
   return (
     <TooltipProvider>
       <section className="min-h-screen py-20 px-6">
@@ -269,10 +326,16 @@ const Services = () => {
               </span>
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-terminal-green text-terminal-bg px-8 py-3 rounded-lg font-semibold hover:bg-terminal-green/90 transition-all duration-300 hover:shadow-lg hover:shadow-terminal-green/30">
+              <button 
+                onClick={handleGetQuote}
+                className="bg-terminal-green text-terminal-bg px-8 py-3 rounded-lg font-semibold hover:bg-terminal-green/90 transition-all duration-300 hover:shadow-lg hover:shadow-terminal-green/30"
+              >
                 <span className="syntax-function">getQuote</span>()
               </button>
-              <button className="border border-terminal-green text-terminal-green px-8 py-3 rounded-lg font-semibold hover:bg-terminal-green/10 transition-all duration-300">
+              <button 
+                onClick={handleViewPortfolio}
+                className="border border-terminal-green text-terminal-green px-8 py-3 rounded-lg font-semibold hover:bg-terminal-green/10 transition-all duration-300"
+              >
                 <span className="syntax-function">viewPortfolio</span>()
               </button>
             </div>
