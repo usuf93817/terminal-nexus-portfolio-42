@@ -7,7 +7,7 @@ const ParticleBackground: React.FC = memo(() => {
   const colors = useMemo(() => ['#4ec9b0', '#569cd6', '#dcdcaa', '#c586c0'], []);
   const particleCount = useMemo(() => {
     // Reduce particles on mobile for better performance
-    return window.innerWidth < 768 ? 25 : 50;
+    return window.innerWidth < 768 ? 20 : 40;
   }, []);
 
   useEffect(() => {
@@ -18,6 +18,10 @@ const ParticleBackground: React.FC = memo(() => {
     if (!ctx) return;
 
     let animationFrameId: number;
+    let lastTime = 0;
+    const targetFPS = 60;
+    const frameInterval = 1000 / targetFPS;
+    
     const particles: Array<{
       x: number;
       y: number;
@@ -36,10 +40,10 @@ const ParticleBackground: React.FC = memo(() => {
     const createParticle = () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
-      size: Math.random() * 2 + 1,
-      opacity: Math.random() * 0.5 + 0.1,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      size: Math.random() * 1.5 + 0.5,
+      opacity: Math.random() * 0.4 + 0.1,
       color: colors[Math.floor(Math.random() * colors.length)]
     });
 
@@ -50,16 +54,31 @@ const ParticleBackground: React.FC = memo(() => {
       }
     };
 
-    const animate = () => {
-      ctx.fillStyle = 'rgba(30, 30, 30, 0.05)';
+    const animate = (currentTime: number) => {
+      if (currentTime - lastTime < frameInterval) {
+        animationFrameId = requestAnimationFrame(animate);
+        return;
+      }
+      
+      lastTime = currentTime;
+      
+      // Use a more subtle fade effect for smoother animation
+      ctx.fillStyle = 'rgba(30, 30, 30, 0.03)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       particles.forEach((particle, index) => {
         particle.x += particle.vx;
         particle.y += particle.vy;
 
-        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
-        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
+        // Smooth boundary bouncing
+        if (particle.x < 0 || particle.x > canvas.width) {
+          particle.vx *= -0.9;
+          particle.x = Math.max(0, Math.min(canvas.width, particle.x));
+        }
+        if (particle.y < 0 || particle.y > canvas.height) {
+          particle.vy *= -0.9;
+          particle.y = Math.max(0, Math.min(canvas.height, particle.y));
+        }
 
         ctx.globalAlpha = particle.opacity;
         ctx.fillStyle = particle.color;
@@ -67,17 +86,16 @@ const ParticleBackground: React.FC = memo(() => {
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fill();
 
-        // Draw connections
-        particles.slice(index + 1).forEach(otherParticle => {
-          const distance = Math.sqrt(
-            Math.pow(particle.x - otherParticle.x, 2) + 
-            Math.pow(particle.y - otherParticle.y, 2)
-          );
+        // Draw connections with improved performance
+        particles.slice(index + 1, index + 5).forEach(otherParticle => {
+          const dx = particle.x - otherParticle.x;
+          const dy = particle.y - otherParticle.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
 
-          if (distance < 100) {
-            ctx.globalAlpha = (100 - distance) / 100 * 0.2;
+          if (distance < 80) {
+            ctx.globalAlpha = (80 - distance) / 80 * 0.15;
             ctx.strokeStyle = particle.color;
-            ctx.lineWidth = 0.5;
+            ctx.lineWidth = 0.3;
             ctx.beginPath();
             ctx.moveTo(particle.x, particle.y);
             ctx.lineTo(otherParticle.x, otherParticle.y);
@@ -91,12 +109,17 @@ const ParticleBackground: React.FC = memo(() => {
 
     resizeCanvas();
     initParticles();
-    animate();
+    animate(0);
 
-    window.addEventListener('resize', resizeCanvas);
+    const handleResize = () => {
+      resizeCanvas();
+      initParticles();
+    };
+
+    window.addEventListener('resize', handleResize, { passive: true });
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
+      window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
     };
   }, [colors, particleCount]);
@@ -104,8 +127,8 @@ const ParticleBackground: React.FC = memo(() => {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.3 }}
+      className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-1000"
+      style={{ opacity: 0.25 }}
       aria-hidden="true"
     />
   );

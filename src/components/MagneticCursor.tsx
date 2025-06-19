@@ -28,21 +28,21 @@ const MagneticCursor: React.FC = memo(() => {
   }, []);
 
   useEffect(() => {
-    document.addEventListener('mousemove', updateCursor);
-    document.addEventListener('mouseenter', handleMouseEnter, true);
-    document.addEventListener('mouseleave', handleMouseLeave, true);
+    document.addEventListener('mousemove', updateCursor, { passive: true });
+    document.addEventListener('mouseenter', handleMouseEnter, { passive: true, capture: true });
+    document.addEventListener('mouseleave', handleMouseLeave, { passive: true, capture: true });
 
     return () => {
       document.removeEventListener('mousemove', updateCursor);
-      document.removeEventListener('mouseenter', handleMouseEnter, true);
-      document.removeEventListener('mouseleave', handleMouseLeave, true);
+      document.removeEventListener('mouseenter', handleMouseEnter, { capture: true });
+      document.removeEventListener('mouseleave', handleMouseLeave, { capture: true });
     };
   }, [updateCursor, handleMouseEnter, handleMouseLeave]);
 
   return (
     <>
       <div
-        className={`fixed pointer-events-none z-50 mix-blend-difference transition-all duration-150 ${
+        className={`fixed pointer-events-none z-50 mix-blend-difference transition-all duration-300 ease-out ${
           isHovering ? 'scale-150' : 'scale-100'
         }`}
         style={{
@@ -52,15 +52,19 @@ const MagneticCursor: React.FC = memo(() => {
           height: '20px',
           backgroundColor: '#4ec9b0',
           borderRadius: '50%',
-          transform: `translate(-50%, -50%) scale(${isHovering ? 1.5 : 1})`
+          transform: `translate(-50%, -50%) scale(${isHovering ? 1.5 : 1})`,
+          filter: 'blur(0.5px)',
+          boxShadow: isHovering ? '0 0 20px rgba(78, 201, 176, 0.5)' : 'none'
         }}
       />
       {cursorText && (
         <div
-          className="fixed pointer-events-none z-50 bg-terminal-green text-terminal-bg px-2 py-1 rounded text-xs font-mono"
+          className="fixed pointer-events-none z-50 bg-terminal-bg/95 border border-terminal-green/50 text-terminal-green px-3 py-2 rounded-lg text-sm font-mono backdrop-blur-md shadow-lg transition-all duration-200 ease-out"
           style={{
             left: position.x + 20,
-            top: position.y - 30
+            top: position.y - 40,
+            transform: 'translateY(0)',
+            opacity: 1
           }}
         >
           {cursorText}

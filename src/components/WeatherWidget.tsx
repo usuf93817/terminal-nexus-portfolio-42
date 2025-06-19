@@ -138,9 +138,9 @@ const WeatherWidget: React.FC = memo(() => {
 
   if (loading) {
     return (
-      <div className="fixed top-4 right-4 z-40">
-        <div className="w-12 h-12 bg-terminal-bg/95 border border-terminal-border rounded-lg backdrop-blur-sm shadow-lg flex items-center justify-center">
-          <div className="animate-spin w-4 h-4 border-2 border-terminal-green/30 border-t-terminal-green rounded-full"></div>
+      <div className="fixed top-4 right-4 z-50">
+        <div className="w-14 h-14 bg-terminal-bg/98 border-2 border-terminal-border rounded-xl backdrop-blur-md shadow-2xl flex items-center justify-center">
+          <div className="animate-spin w-5 h-5 border-2 border-terminal-green/30 border-t-terminal-green rounded-full"></div>
         </div>
       </div>
     );
@@ -148,129 +148,148 @@ const WeatherWidget: React.FC = memo(() => {
 
   if (error || !weather) {
     return (
-      <div className="fixed top-4 right-4 z-40">
-        <div className="w-12 h-12 bg-terminal-bg/95 border border-red-500/50 rounded-lg backdrop-blur-sm shadow-lg flex items-center justify-center">
-          <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+      <div className="fixed top-4 right-4 z-50">
+        <div className="w-14 h-14 bg-terminal-bg/98 border-2 border-red-500/70 rounded-xl backdrop-blur-md shadow-2xl flex items-center justify-center">
+          <div className="w-3 h-3 bg-red-400 rounded-full animate-pulse"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed top-4 right-4 z-40">
+    <div className="fixed top-4 right-4 z-50">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <button
-            className="group w-12 h-12 bg-terminal-bg/95 border border-terminal-border rounded-lg backdrop-blur-sm shadow-lg transition-all duration-300 hover:border-terminal-green/50 hover:shadow-xl hover:scale-105 flex items-center justify-center"
+            className="group w-14 h-14 bg-terminal-bg/98 border-2 border-terminal-border rounded-xl backdrop-blur-md shadow-2xl transition-all duration-500 hover:border-terminal-green/80 hover:shadow-terminal-green/20 hover:shadow-2xl hover:scale-110 flex items-center justify-center relative overflow-hidden"
             aria-label="Weather information"
           >
-            <div className="flex items-center space-x-1">
-              {weatherIcon}
-              <span className="text-terminal-green text-xs font-mono font-bold hidden group-hover:block transition-all duration-300">
-                {weather.temperature}°
-              </span>
+            {/* Background glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-terminal-green/5 via-transparent to-terminal-blue/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            
+            <div className="flex items-center justify-center relative z-10">
+              <div className="flex items-center space-x-1">
+                <div className="transform transition-all duration-300 group-hover:scale-110">
+                  {weatherIcon}
+                </div>
+                <span className="text-terminal-green text-sm font-mono font-bold transition-all duration-300 group-hover:text-terminal-text">
+                  {weather.temperature}°
+                </span>
+              </div>
             </div>
+            
+            {/* Scan line effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-terminal-green/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
           </button>
         </PopoverTrigger>
         
         <PopoverContent 
-          className="w-80 p-0 bg-terminal-bg/95 border-terminal-border backdrop-blur-sm" 
+          className="w-96 p-0 bg-terminal-bg/98 border-2 border-terminal-border backdrop-blur-xl shadow-2xl shadow-terminal-green/10 rounded-xl" 
           align="end"
-          sideOffset={8}
+          sideOffset={12}
         >
-          <div className="p-4 space-y-4">
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-terminal-border/50 pb-3">
-              <span className="text-terminal-green text-sm font-mono">weather</span>
-              <div className="flex items-center space-x-1">
-                <div className="w-1 h-1 bg-terminal-green rounded-full animate-pulse"></div>
-                <span className="text-terminal-text/60 text-xs font-mono">LIVE</span>
+          {/* Enhanced backdrop blur overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-terminal-bg/95 to-terminal-bg/90 rounded-xl backdrop-blur-xl" />
+          
+          <div className="relative z-10 p-6 space-y-5">
+            {/* Header with enhanced styling */}
+            <div className="flex items-center justify-between border-b border-terminal-border/60 pb-4">
+              <span className="text-terminal-green text-lg font-mono font-semibold">weather.json</span>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-terminal-green rounded-full animate-pulse"></div>
+                <span className="text-terminal-text/80 text-sm font-mono">LIVE</span>
               </div>
             </div>
 
-            {/* Primary Info */}
+            {/* Primary Info with better contrast */}
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-2xl font-bold text-terminal-green font-mono">
+                <div className="text-4xl font-bold text-terminal-green font-mono mb-2">
                   {weather.temperature}°C
                 </div>
-                <div className="text-terminal-text/80 text-sm">
+                <div className="text-terminal-text text-lg font-medium mb-2">
                   {weather.condition}
                 </div>
-                <div className="flex items-center text-terminal-text/60 text-xs mt-1">
-                  <MapPin className="w-3 h-3 mr-1" />
+                <div className="flex items-center text-terminal-text/70 text-sm">
+                  <MapPin className="w-4 h-4 mr-2" />
                   <span>{weather.location}</span>
                 </div>
               </div>
-              <div className="flex items-center justify-center w-16 h-16 bg-terminal-bg/50 rounded-lg border border-terminal-border/30">
-                <div className="scale-150">
+              <div className="flex items-center justify-center w-20 h-20 bg-terminal-bg/60 rounded-xl border-2 border-terminal-border/40 backdrop-blur-sm">
+                <div className="scale-[2]">
                   {weatherIcon}
                 </div>
               </div>
             </div>
 
-            {/* Time Display */}
-            <div className="bg-terminal-bg/50 rounded-lg p-3 border border-terminal-border/30">
+            {/* Time Display with enhanced visibility */}
+            <div className="bg-terminal-bg/70 rounded-xl p-4 border-2 border-terminal-border/40 backdrop-blur-sm">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Clock className="w-4 h-4 text-terminal-blue" />
-                  <span className="text-terminal-text/60 text-sm font-mono">Local Time</span>
+                <div className="flex items-center space-x-3">
+                  <Clock className="w-5 h-5 text-terminal-blue" />
+                  <span className="text-terminal-text/80 text-base font-mono">Local Time</span>
                 </div>
-                <span className="text-terminal-green font-mono font-bold text-lg">
+                <span className="text-terminal-green font-mono font-bold text-2xl">
                   {formattedTime}
                 </span>
               </div>
             </div>
 
-            {/* Weather Details */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-terminal-bg/30 rounded-lg p-3 border border-terminal-border/20">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Droplets className="w-4 h-4 text-terminal-blue" />
-                  <span className="text-terminal-text/60 text-sm">Humidity</span>
+            {/* Weather Details with improved readability */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-terminal-bg/60 rounded-xl p-4 border-2 border-terminal-border/30 backdrop-blur-sm">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Droplets className="w-5 h-5 text-terminal-blue" />
+                  <span className="text-terminal-text/80 text-sm font-medium">Humidity</span>
                 </div>
-                <div className="text-terminal-text font-mono text-lg font-bold">
+                <div className="text-terminal-text font-mono text-2xl font-bold">
                   {weather.humidity}%
                 </div>
               </div>
 
-              <div className="bg-terminal-bg/30 rounded-lg p-3 border border-terminal-border/20">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Wind className="w-4 h-4 text-terminal-blue" />
-                  <span className="text-terminal-text/60 text-sm">Wind</span>
+              <div className="bg-terminal-bg/60 rounded-xl p-4 border-2 border-terminal-border/30 backdrop-blur-sm">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Wind className="w-5 h-5 text-terminal-blue" />
+                  <span className="text-terminal-text/80 text-sm font-medium">Wind</span>
                 </div>
-                <div className="text-terminal-text font-mono text-lg font-bold">
+                <div className="text-terminal-text font-mono text-2xl font-bold">
                   {weather.windSpeed} km/h
                 </div>
               </div>
 
-              <div className="bg-terminal-bg/30 rounded-lg p-3 border border-terminal-border/20">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Eye className="w-4 h-4 text-terminal-blue" />
-                  <span className="text-terminal-text/60 text-sm">Visibility</span>
+              <div className="bg-terminal-bg/60 rounded-xl p-4 border-2 border-terminal-border/30 backdrop-blur-sm">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Eye className="w-5 h-5 text-terminal-blue" />
+                  <span className="text-terminal-text/80 text-sm font-medium">Visibility</span>
                 </div>
-                <div className="text-terminal-text font-mono text-lg font-bold">
+                <div className="text-terminal-text font-mono text-2xl font-bold">
                   {weather.visibility} km
                 </div>
               </div>
 
-              <div className="bg-terminal-bg/30 rounded-lg p-3 border border-terminal-border/20">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Thermometer className="w-4 h-4 text-terminal-blue" />
-                  <span className="text-terminal-text/60 text-sm">Feels like</span>
+              <div className="bg-terminal-bg/60 rounded-xl p-4 border-2 border-terminal-border/30 backdrop-blur-sm">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Thermometer className="w-5 h-5 text-terminal-blue" />
+                  <span className="text-terminal-text/80 text-sm font-medium">Feels like</span>
                 </div>
-                <div className="text-terminal-text font-mono text-lg font-bold">
+                <div className="text-terminal-text font-mono text-2xl font-bold">
                   {weather.feelsLike}°C
                 </div>
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="flex items-center justify-between text-terminal-text/40 text-xs font-mono pt-3 border-t border-terminal-border/20">
-              <span>AUTO-LOCATION</span>
+            {/* Footer with enhanced styling */}
+            <div className="flex items-center justify-between text-terminal-text/60 text-xs font-mono pt-4 border-t border-terminal-border/40">
+              <span className="flex items-center space-x-1">
+                <div className="w-1 h-1 bg-terminal-green rounded-full animate-pulse"></div>
+                <span>AUTO-LOCATION</span>
+              </span>
               <span>UPDATED: NOW</span>
             </div>
           </div>
+          
+          {/* Enhanced glow effect */}
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-terminal-green/5 via-transparent to-terminal-blue/5 pointer-events-none" />
         </PopoverContent>
       </Popover>
     </div>
