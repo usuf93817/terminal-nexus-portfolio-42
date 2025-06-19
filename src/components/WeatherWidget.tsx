@@ -1,6 +1,8 @@
+
 import React, { useState, useEffect, memo, useMemo, useCallback } from 'react';
 import { Cloud, Sun, CloudRain, CloudSnow, Wind, Thermometer, Eye, Droplets, MapPin, Clock, Wifi, ChevronDown, ChevronUp } from 'lucide-react';
 import { locationService, LocationData } from '../services/locationService';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 interface WeatherData {
   temperature: number;
@@ -20,8 +22,7 @@ const WeatherWidget: React.FC = memo(() => {
   const [location, setLocation] = useState<LocationData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isMobileCollapsed, setIsMobileCollapsed] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // Memoized weather data generation
@@ -43,7 +44,7 @@ const WeatherWidget: React.FC = memo(() => {
     if (!weather) return null;
     
     const getWeatherIcon = (condition: string) => {
-      const iconClass = "w-5 h-5";
+      const iconClass = "w-4 h-4";
       switch (condition.toLowerCase()) {
         case 'sunny':
         case 'clear':
@@ -73,23 +74,20 @@ const WeatherWidget: React.FC = memo(() => {
           timeZone: location.timezone,
           hour12: false,
           hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit'
+          minute: '2-digit'
         });
       } catch (error) {
         return currentTime.toLocaleTimeString('en-US', { 
           hour12: false,
           hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit'
+          minute: '2-digit'
         });
       }
     }
     return currentTime.toLocaleTimeString('en-US', { 
       hour12: false,
       hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
+      minute: '2-digit'
     });
   }, [currentTime, location?.timezone]);
 
@@ -140,12 +138,9 @@ const WeatherWidget: React.FC = memo(() => {
 
   if (loading) {
     return (
-      <div className={`fixed ${isMobile ? 'bottom-4 right-4 w-40' : 'top-4 right-4 w-48'} bg-terminal-bg/95 border border-terminal-border rounded-lg backdrop-blur-sm shadow-lg z-40`}>
-        <div className="p-3">
-          <div className="flex items-center space-x-2">
-            <div className="animate-spin w-4 h-4 border-2 border-terminal-green/30 border-t-terminal-green rounded-full"></div>
-            <span className="text-terminal-text text-sm font-mono">Loading...</span>
-          </div>
+      <div className="fixed top-4 right-4 z-40">
+        <div className="w-12 h-12 bg-terminal-bg/95 border border-terminal-border rounded-lg backdrop-blur-sm shadow-lg flex items-center justify-center">
+          <div className="animate-spin w-4 h-4 border-2 border-terminal-green/30 border-t-terminal-green rounded-full"></div>
         </div>
       </div>
     );
@@ -153,152 +148,131 @@ const WeatherWidget: React.FC = memo(() => {
 
   if (error || !weather) {
     return (
-      <div className={`fixed ${isMobile ? 'bottom-4 right-4 w-40' : 'top-4 right-4 w-48'} bg-terminal-bg/95 border border-red-500/50 rounded-lg backdrop-blur-sm shadow-lg z-40`}>
-        <div className="p-3">
-          <div className="text-red-400 text-sm font-mono flex items-center">
-            <div className="w-2 h-2 bg-red-400 rounded-full mr-2"></div>
-            Weather unavailable
-          </div>
+      <div className="fixed top-4 right-4 z-40">
+        <div className="w-12 h-12 bg-terminal-bg/95 border border-red-500/50 rounded-lg backdrop-blur-sm shadow-lg flex items-center justify-center">
+          <div className="w-2 h-2 bg-red-400 rounded-full"></div>
         </div>
       </div>
     );
   }
 
-  const shouldShowCollapsed = isMobile && isMobileCollapsed;
-
   return (
-    <div 
-      className={`fixed ${isMobile ? 'bottom-4 right-4' : 'top-4 right-4'} bg-terminal-bg/95 border border-terminal-border rounded-lg backdrop-blur-sm shadow-lg transition-all duration-300 z-40 ${
-        shouldShowCollapsed ? 'w-16 h-16' : (isExpanded ? 'w-64' : (isMobile ? 'w-52' : 'w-48'))
-      }`}
-      role="region"
-      aria-label="Weather information"
-    >
-      {shouldShowCollapsed ? (
-        // Mobile collapsed view
-        <button
-          onClick={() => setIsMobileCollapsed(false)}
-          className="w-full h-full flex items-center justify-center text-terminal-green hover:bg-terminal-green/10 rounded-lg transition-colors"
-          aria-label="Expand weather widget"
-        >
-          {weatherIcon}
-        </button>
-      ) : (
-        <>
-          {/* Header */}
-          <div className="px-3 py-2 border-b border-terminal-border/50 flex items-center justify-between">
-            <span className="text-terminal-green text-xs font-mono">weather</span>
+    <div className="fixed top-4 right-4 z-40">
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <PopoverTrigger asChild>
+          <button
+            className="group w-12 h-12 bg-terminal-bg/95 border border-terminal-border rounded-lg backdrop-blur-sm shadow-lg transition-all duration-300 hover:border-terminal-green/50 hover:shadow-xl hover:scale-105 flex items-center justify-center"
+            aria-label="Weather information"
+          >
             <div className="flex items-center space-x-1">
-              {!isMobile && (
-                <button
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="text-terminal-text/60 hover:text-terminal-green transition-colors text-xs"
-                  aria-label={isExpanded ? "Collapse weather details" : "Expand weather details"}
-                >
-                  {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                </button>
-              )}
-              {isMobile && (
-                <button
-                  onClick={() => setIsMobileCollapsed(true)}
-                  className="text-terminal-text/60 hover:text-terminal-green transition-colors text-xs"
-                  aria-label="Collapse weather widget"
-                >
-                  <ChevronUp className="w-3 h-3" />
-                </button>
-              )}
+              {weatherIcon}
+              <span className="text-terminal-green text-xs font-mono font-bold hidden group-hover:block transition-all duration-300">
+                {weather.temperature}°
+              </span>
             </div>
-          </div>
+          </button>
+        </PopoverTrigger>
+        
+        <PopoverContent 
+          className="w-80 p-0 bg-terminal-bg/95 border-terminal-border backdrop-blur-sm" 
+          align="end"
+          sideOffset={8}
+        >
+          <div className="p-4 space-y-4">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-terminal-border/50 pb-3">
+              <span className="text-terminal-green text-sm font-mono">weather</span>
+              <div className="flex items-center space-x-1">
+                <div className="w-1 h-1 bg-terminal-green rounded-full animate-pulse"></div>
+                <span className="text-terminal-text/60 text-xs font-mono">LIVE</span>
+              </div>
+            </div>
 
-          {/* Weather Content */}
-          <div className="p-3 space-y-3">
             {/* Primary Info */}
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-xl font-bold text-terminal-green font-mono" role="text" aria-label={`Temperature ${weather.temperature} degrees celsius`}>
+                <div className="text-2xl font-bold text-terminal-green font-mono">
                   {weather.temperature}°C
                 </div>
-                <div className="text-terminal-text/80 text-xs">
+                <div className="text-terminal-text/80 text-sm">
                   {weather.condition}
                 </div>
                 <div className="flex items-center text-terminal-text/60 text-xs mt-1">
-                  <MapPin className="w-2 h-2 mr-1" aria-hidden="true" />
-                  <span aria-label={`Location ${weather.location}`}>{weather.location}</span>
+                  <MapPin className="w-3 h-3 mr-1" />
+                  <span>{weather.location}</span>
                 </div>
               </div>
-              <div className="flex items-center justify-center" aria-hidden="true">
-                {weatherIcon}
+              <div className="flex items-center justify-center w-16 h-16 bg-terminal-bg/50 rounded-lg border border-terminal-border/30">
+                <div className="scale-150">
+                  {weatherIcon}
+                </div>
               </div>
             </div>
 
             {/* Time Display */}
-            <div className="bg-terminal-bg/50 rounded p-2 border border-terminal-border/30">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-terminal-text/60 font-mono">Time</span>
-                <span className="text-terminal-green font-mono font-bold" role="text" aria-label={`Current time ${formattedTime}`}>
+            <div className="bg-terminal-bg/50 rounded-lg p-3 border border-terminal-border/30">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Clock className="w-4 h-4 text-terminal-blue" />
+                  <span className="text-terminal-text/60 text-sm font-mono">Local Time</span>
+                </div>
+                <span className="text-terminal-green font-mono font-bold text-lg">
                   {formattedTime}
                 </span>
               </div>
             </div>
 
             {/* Weather Details */}
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="bg-terminal-bg/30 rounded p-2">
-                <div className="flex items-center space-x-1 mb-1">
-                  <Droplets className="w-3 h-3 text-terminal-blue" aria-hidden="true" />
-                  <span className="text-terminal-text/60">Humidity</span>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-terminal-bg/30 rounded-lg p-3 border border-terminal-border/20">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Droplets className="w-4 h-4 text-terminal-blue" />
+                  <span className="text-terminal-text/60 text-sm">Humidity</span>
                 </div>
-                <div className="text-terminal-text font-mono" role="text" aria-label={`Humidity ${weather.humidity} percent`}>
+                <div className="text-terminal-text font-mono text-lg font-bold">
                   {weather.humidity}%
                 </div>
               </div>
 
-              <div className="bg-terminal-bg/30 rounded p-2">
-                <div className="flex items-center space-x-1 mb-1">
-                  <Wind className="w-3 h-3 text-terminal-blue" aria-hidden="true" />
-                  <span className="text-terminal-text/60">Wind</span>
+              <div className="bg-terminal-bg/30 rounded-lg p-3 border border-terminal-border/20">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Wind className="w-4 h-4 text-terminal-blue" />
+                  <span className="text-terminal-text/60 text-sm">Wind</span>
                 </div>
-                <div className="text-terminal-text font-mono" role="text" aria-label={`Wind speed ${weather.windSpeed} kilometers per hour`}>
+                <div className="text-terminal-text font-mono text-lg font-bold">
                   {weather.windSpeed} km/h
                 </div>
               </div>
 
-              {(isExpanded || isMobile) && (
-                <>
-                  <div className="bg-terminal-bg/30 rounded p-2">
-                    <div className="flex items-center space-x-1 mb-1">
-                      <Eye className="w-3 h-3 text-terminal-blue" aria-hidden="true" />
-                      <span className="text-terminal-text/60">Visibility</span>
-                    </div>
-                    <div className="text-terminal-text font-mono" role="text" aria-label={`Visibility ${weather.visibility} kilometers`}>
-                      {weather.visibility} km
-                    </div>
-                  </div>
+              <div className="bg-terminal-bg/30 rounded-lg p-3 border border-terminal-border/20">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Eye className="w-4 h-4 text-terminal-blue" />
+                  <span className="text-terminal-text/60 text-sm">Visibility</span>
+                </div>
+                <div className="text-terminal-text font-mono text-lg font-bold">
+                  {weather.visibility} km
+                </div>
+              </div>
 
-                  <div className="bg-terminal-bg/30 rounded p-2">
-                    <div className="flex items-center space-x-1 mb-1">
-                      <Thermometer className="w-3 h-3 text-terminal-blue" aria-hidden="true" />
-                      <span className="text-terminal-text/60">Feels like</span>
-                    </div>
-                    <div className="text-terminal-text font-mono" role="text" aria-label={`Feels like ${weather.feelsLike} degrees celsius`}>
-                      {weather.feelsLike}°C
-                    </div>
-                  </div>
-                </>
-              )}
+              <div className="bg-terminal-bg/30 rounded-lg p-3 border border-terminal-border/20">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Thermometer className="w-4 h-4 text-terminal-blue" />
+                  <span className="text-terminal-text/60 text-sm">Feels like</span>
+                </div>
+                <div className="text-terminal-text font-mono text-lg font-bold">
+                  {weather.feelsLike}°C
+                </div>
+              </div>
             </div>
 
-            {/* Status */}
-            <div className="flex items-center justify-between text-terminal-text/40 text-xs font-mono pt-2 border-t border-terminal-border/20">
-              <div className="flex items-center space-x-1">
-                <div className="w-1 h-1 bg-terminal-green rounded-full" aria-hidden="true"></div>
-                <span>LIVE</span>
-              </div>
+            {/* Footer */}
+            <div className="flex items-center justify-between text-terminal-text/40 text-xs font-mono pt-3 border-t border-terminal-border/20">
               <span>AUTO-LOCATION</span>
+              <span>UPDATED: NOW</span>
             </div>
           </div>
-        </>
-      )}
+        </PopoverContent>
+      </Popover>
     </div>
   );
 });

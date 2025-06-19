@@ -4,6 +4,8 @@ import { Github, Facebook, Instagram, Mail } from 'lucide-react';
 
 const SocialSidebar: React.FC = memo(() => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const [scrollTimeout, setScrollTimeout] = useState<NodeJS.Timeout | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const socialLinks = useMemo(() => [
@@ -50,6 +52,19 @@ const SocialSidebar: React.FC = memo(() => {
   useEffect(() => {
     const handleScroll = () => {
       setIsVisible(window.scrollY > 100);
+      setIsScrolling(true);
+      
+      // Clear existing timeout
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
+      
+      // Set new timeout to hide sidebar when scrolling stops
+      const newTimeout = setTimeout(() => {
+        setIsScrolling(false);
+      }, 2000); // Hide after 2 seconds of no scrolling
+      
+      setScrollTimeout(newTimeout);
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -58,9 +73,9 @@ const SocialSidebar: React.FC = memo(() => {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     if (!isMobile) {
-      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mousemove', handleMouseMove, { passive: true });
     }
     
     return () => {
@@ -68,14 +83,19 @@ const SocialSidebar: React.FC = memo(() => {
       if (!isMobile) {
         window.removeEventListener('mousemove', handleMouseMove);
       }
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
     };
-  }, [isMobile]);
+  }, [isMobile, scrollTimeout]);
+
+  const shouldShow = isVisible && isScrolling;
 
   if (isMobile) {
     // Mobile bottom navigation
     return (
-      <div className={`fixed bottom-0 left-0 right-0 z-40 transition-all duration-500 ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full'
+      <div className={`fixed bottom-0 left-0 right-0 z-40 transition-all duration-500 ease-in-out ${
+        shouldShow ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full'
       }`}>
         <div className="bg-terminal-bg/95 border-t border-terminal-border/50 backdrop-blur-md px-4 py-3">
           <div className="flex justify-center space-x-8">
@@ -85,10 +105,10 @@ const SocialSidebar: React.FC = memo(() => {
                 href={social.url}
                 target={social.id !== 'email' ? '_blank' : undefined}
                 rel={social.id !== 'email' ? 'noopener noreferrer' : undefined}
-                className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-all duration-300 ${social.hoverColor} hover:bg-terminal-green/10`}
+                className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-all duration-300 ${social.hoverColor} hover:bg-terminal-green/10 hover:scale-105`}
                 aria-label={social.description}
               >
-                <social.icon className={`w-5 h-5 ${social.color}`} />
+                <social.icon className={`w-5 h-5 ${social.color} transition-all duration-300`} />
                 <span className="text-xs font-mono text-terminal-text/60">{social.label}</span>
               </a>
             ))}
@@ -100,8 +120,8 @@ const SocialSidebar: React.FC = memo(() => {
 
   // Desktop sidebar
   return (
-    <div className={`fixed left-4 top-1/2 transform -translate-y-1/2 z-40 transition-all duration-500 ${
-      isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-20'
+    <div className={`fixed left-4 top-1/2 transform -translate-y-1/2 z-40 transition-all duration-700 ease-in-out ${
+      shouldShow ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-20'
     }`}>
       {/* Connection Lines */}
       <div className="absolute inset-0 pointer-events-none">
@@ -115,8 +135,9 @@ const SocialSidebar: React.FC = memo(() => {
             key={social.id}
             className="group relative"
             style={{
-              transform: `perspective(500px) rotateY(${(mousePosition.x - window.innerWidth / 2) * 0.01}deg)`,
-              animationDelay: `${index * 0.1}s`
+              transform: `perspective(500px) rotateY(${(mousePosition.x - window.innerWidth / 2) * 0.005}deg)`,
+              animationDelay: `${index * 0.1}s`,
+              transition: 'transform 0.3s ease-out'
             }}
           >
             {/* Main Card */}
