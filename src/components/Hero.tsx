@@ -1,10 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { Code, Database, Brain, Globe } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { navigateToSection } from '../utils/navigation';
 
 const Hero = () => {
-  const { toast } = useToast();
   const [displayText, setDisplayText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -74,47 +73,11 @@ const Hero = () => {
   ];
 
   const handleExploreProjects = () => {
-    // Scroll to portfolio section
-    const portfolioSection = document.querySelector('[data-section="portfolio"]') || 
-                            document.querySelector('#portfolio') ||
-                            document.querySelector('section:nth-of-type(4)'); // Fallback
-    
-    if (portfolioSection) {
-      portfolioSection.scrollIntoView({ behavior: 'smooth' });
-      toast({
-        title: "Exploring Projects",
-        description: "Navigating to our portfolio section...",
-      });
-    } else {
-      // If portfolio section not found, show projects info
-      toast({
-        title: "Our Projects",
-        description: "150+ successful projects completed across various technologies!",
-        duration: 4000,
-      });
-    }
+    navigateToSection('portfolio', 'Portfolio');
   };
 
   const handleContactUs = () => {
-    // Scroll to contact section
-    const contactSection = document.querySelector('[data-section="contact"]') || 
-                          document.querySelector('#contact') ||
-                          document.querySelector('section:last-of-type'); // Fallback
-    
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth' });
-      toast({
-        title: "Let's Connect!",
-        description: "Scrolling to contact form. We're excited to hear from you!",
-      });
-    } else {
-      // If contact section not found, provide contact info
-      toast({
-        title: "Contact NodeXstation",
-        description: "Email us at nodexstation@gmail.com or use the contact form below!",
-        duration: 5000,
-      });
-    }
+    navigateToSection('contact', 'Contact');
   };
 
   return (

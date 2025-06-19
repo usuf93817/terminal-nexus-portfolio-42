@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Cloud, Sun, CloudRain, CloudSnow, Wind, Thermometer, Eye, Droplets, MapPin, Clock, Wifi } from 'lucide-react';
+import { locationService, LocationData } from '../services/locationService';
 
 interface WeatherData {
   temperature: number;
@@ -15,13 +16,6 @@ interface WeatherData {
   pressure: number;
 }
 
-interface LocationData {
-  city: string;
-  region: string;
-  country: string;
-  timezone: string;
-}
-
 const WeatherWidget = () => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [location, setLocation] = useState<LocationData | null>(null);
@@ -31,39 +25,18 @@ const WeatherWidget = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // Enhanced mock weather data
-  const mockWeatherData: WeatherData = {
-    temperature: 22,
-    condition: "Partly Cloudy",
-    humidity: 65,
-    windSpeed: 12,
-    visibility: 10,
-    location: "San Francisco, CA",
+  const generateWeatherData = (locationData: LocationData): WeatherData => ({
+    temperature: Math.round(15 + Math.random() * 20), // 15-35°C
+    condition: ["Sunny", "Partly Cloudy", "Cloudy", "Clear"][Math.floor(Math.random() * 4)],
+    humidity: Math.round(30 + Math.random() * 50), // 30-80%
+    windSpeed: Math.round(5 + Math.random() * 20), // 5-25 km/h
+    visibility: Math.round(8 + Math.random() * 7), // 8-15 km
+    location: `${locationData.city}, ${locationData.region}`,
     icon: "partly-cloudy",
-    feelsLike: 24,
-    uvIndex: 6,
-    pressure: 1013
-  };
-
-  const fetchLocationByIP = async () => {
-    try {
-      const response = await fetch('https://ipapi.co/json/');
-      const data = await response.json();
-      return {
-        city: data.city,
-        region: data.region,
-        country: data.country_name,
-        timezone: data.timezone
-      };
-    } catch (error) {
-      console.log('Location detection failed, using default');
-      return {
-        city: 'San Francisco',
-        region: 'CA',
-        country: 'United States',
-        timezone: 'America/Los_Angeles'
-      };
-    }
-  };
+    feelsLike: Math.round(15 + Math.random() * 20),
+    uvIndex: Math.round(1 + Math.random() * 10),
+    pressure: Math.round(1000 + Math.random() * 50)
+  });
 
   useEffect(() => {
     // Update time every second
@@ -75,21 +48,28 @@ const WeatherWidget = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const locationData = await fetchLocationByIP();
+        const locationData = await locationService.getCurrentLocation();
         setLocation(locationData);
         
         // Simulate weather API call with location-based data
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
-        const weatherWithLocation = {
-          ...mockWeatherData,
-          location: `${locationData.city}, ${locationData.region}`
-        };
-        
-        setWeather(weatherWithLocation);
+        const weatherData = generateWeatherData(locationData);
+        setWeather(weatherData);
         setError(null);
       } catch (err) {
         setError('Failed to fetch weather data');
+        // Set fallback data
+        const fallbackLocation: LocationData = {
+          city: 'San Francisco',
+          region: 'CA',
+          country: 'United States',
+          lat: 37.7749,
+          lon: -122.4194,
+          timezone: 'America/Los_Angeles'
+        };
+        setLocation(fallbackLocation);
+        setWeather(generateWeatherData(fallbackLocation));
       } finally {
         setLoading(false);
       }
@@ -127,13 +107,23 @@ const WeatherWidget = () => {
 
   const formatTime = (date: Date) => {
     if (location?.timezone) {
-      return date.toLocaleTimeString('en-US', { 
-        timeZone: location.timezone,
-        hour12: false,
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      });
+      try {
+        return date.toLocaleTimeString('en-US', { 
+          timeZone: location.timezone,
+          hour12: false,
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
+      } catch (error) {
+        // Fallback if timezone is invalid
+        return date.toLocaleTimeString('en-US', { 
+          hour12: false,
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
+      }
     }
     return date.toLocaleTimeString('en-US', { 
       hour12: false,
@@ -149,7 +139,7 @@ const WeatherWidget = () => {
         <div className="p-3">
           <div className="flex items-center space-x-2">
             <div className="animate-spin w-4 h-4 border-2 border-terminal-green/30 border-t-terminal-green rounded-full"></div>
-            <span className="text-terminal-text text-sm font-mono">Loading...</span>
+            <span className="text-terminal-text text-sm font-mono">Loading location...</span>
           </div>
         </div>
       </div>
@@ -260,7 +250,7 @@ const WeatherWidget = () => {
             <div className="w-1 h-1 bg-terminal-green rounded-full"></div>
             <span>LIVE</span>
           </div>
-          <span>SYNC</span>
+          <span>AUTO-LOCATION</span>
         </div>
       </div>
     </div>
