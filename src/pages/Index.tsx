@@ -41,8 +41,18 @@ const Index = () => {
     `;
     document.head.appendChild(style);
 
+    // Listen for navigation events
+    const handleNavigationEvent = (event: CustomEvent) => {
+      const { sectionId } = event.detail;
+      console.log('Navigation event received:', sectionId);
+      setActiveSection(sectionId);
+    };
+
+    window.addEventListener('navigate-to-section', handleNavigationEvent as EventListener);
+
     return () => {
       document.head.removeChild(style);
+      window.removeEventListener('navigate-to-section', handleNavigationEvent as EventListener);
     };
   }, []);
 

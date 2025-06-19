@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ExternalLink, Github, Eye, Code } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { openExternalLink } from '../utils/navigation';
 
 const Portfolio = () => {
   const [selectedProject, setSelectedProject] = useState(0);
@@ -217,48 +218,41 @@ async def process_scraped_data(data_batch):
 
   const handleLiveDemo = (project: any) => {
     if (project.live && project.live !== "#") {
-      window.open(project.live, '_blank', 'noopener,noreferrer');
+      openExternalLink(project.live, `Opening live demo for ${project.title}`);
     } else {
       toast({
         title: "Live Demo",
         description: (
           <div className="space-y-2">
-            <p>This project is currently in development.</p>
+            <p>This project is currently in development or deployed privately.</p>
             <p>Check out our GitHub for the latest code:</p>
-            <a 
-              href={project.github}
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-terminal-green hover:text-terminal-blue transition-colors"
+            <button
+              onClick={() => openExternalLink(project.github, `Opening GitHub repository for ${project.title}`)}
+              className="text-terminal-green hover:text-terminal-blue transition-colors underline"
             >
               View on GitHub →
-            </a>
+            </button>
           </div>
         ),
-        duration: 5000,
+        duration: 8000,
       });
     }
   };
 
   const handleViewCode = (project: any) => {
     if (project.github) {
-      window.open(project.github, '_blank', 'noopener,noreferrer');
-      toast({
-        title: "Opening GitHub Repository",
-        description: `Viewing source code for ${project.title}`,
-        duration: 3000,
-      });
+      openExternalLink(project.github, `Opening GitHub repository for ${project.title}`);
     } else {
       toast({
-        title: "Code Repository",
-        description: "Source code is currently private or not available.",
-        duration: 3000,
+        title: "Source Code",
+        description: "This repository is currently private or the code is proprietary. Contact us for more information.",
+        duration: 4000,
       });
     }
   };
 
   return (
-    <section className="min-h-screen py-20 px-6">
+    <section className="min-h-screen py-20 px-6" data-section="portfolio">
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <div className="mb-12">
@@ -300,7 +294,7 @@ async def process_scraped_data(data_batch):
               <div
                 key={project.id}
                 onClick={() => setSelectedProject(index)}
-                className={`bg-terminal-bg/50 border rounded-lg p-6 cursor-pointer transition-all hover:scale-105 ${
+                className={`bg-terminal-bg/50 border rounded-lg p-6 cursor-pointer transition-all transform-gpu will-change-transform hover:scale-[1.02] ${
                   selectedProject === index
                     ? 'border-terminal-green glow-effect'
                     : 'border-terminal-border hover:border-terminal-green/50'

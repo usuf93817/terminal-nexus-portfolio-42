@@ -17,29 +17,42 @@ export const navigateToSection = (sectionId: string, sectionName: string) => {
     if (targetElement) break;
   }
 
-  // Fallback: try to find section by content or index
+  // Enhanced fallback: try to find section by content or specific components
   if (!targetElement) {
     const sections = document.querySelectorAll('section');
+    const allElements = document.querySelectorAll('*');
+    
     switch (sectionId) {
       case 'portfolio':
-        targetElement = Array.from(sections).find(section => 
-          section.textContent?.toLowerCase().includes('portfolio') ||
-          section.textContent?.toLowerCase().includes('projects')
+        // Look for portfolio-related elements
+        targetElement = Array.from(allElements).find(el => 
+          el.textContent?.toLowerCase().includes('portfolio') ||
+          el.textContent?.toLowerCase().includes('projects') ||
+          el.className?.includes('portfolio') ||
+          el.className?.includes('project')
         ) || sections[4]; // Fallback to index
         break;
       case 'contact':
-        targetElement = Array.from(sections).find(section => 
-          section.textContent?.toLowerCase().includes('contact')
+        // Look for contact-related elements
+        targetElement = Array.from(allElements).find(el => 
+          el.textContent?.toLowerCase().includes('contact') ||
+          el.textContent?.toLowerCase().includes('email') ||
+          el.className?.includes('contact')
         ) || sections[sections.length - 1]; // Last section
         break;
       case 'services':
-        targetElement = Array.from(sections).find(section => 
-          section.textContent?.toLowerCase().includes('services')
+        // Look for services-related elements
+        targetElement = Array.from(allElements).find(el => 
+          el.textContent?.toLowerCase().includes('services') ||
+          el.textContent?.toLowerCase().includes('mern stack') ||
+          el.className?.includes('service')
         ) || sections[2]; // Fallback to index
         break;
       case 'about':
-        targetElement = Array.from(sections).find(section => 
-          section.textContent?.toLowerCase().includes('about')
+        // Look for about-related elements
+        targetElement = Array.from(allElements).find(el => 
+          el.textContent?.toLowerCase().includes('about') ||
+          el.className?.includes('about')
         ) || sections[1]; // Fallback to index
         break;
     }
@@ -53,10 +66,16 @@ export const navigateToSection = (sectionId: string, sectionName: string) => {
     });
     return true;
   } else {
+    // If still not found, try to trigger section change via setActiveSection
+    const event = new CustomEvent('navigate-to-section', { 
+      detail: { sectionId, sectionName } 
+    });
+    window.dispatchEvent(event);
+    
     toast({
-      title: `${sectionName} Section`,
-      description: `The ${sectionName.toLowerCase()} section is part of our comprehensive portfolio. Contact us to learn more!`,
-      duration: 4000,
+      title: `Switching to ${sectionName}`,
+      description: `Loading the ${sectionName.toLowerCase()} section...`,
+      duration: 3000,
     });
     return false;
   }

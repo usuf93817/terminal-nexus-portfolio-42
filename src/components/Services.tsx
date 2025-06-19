@@ -1,8 +1,7 @@
-
-
 import React from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { navigateToSection, openExternalLink } from '../utils/navigation';
 
 const Services = () => {
   const { toast } = useToast();
@@ -114,7 +113,7 @@ const Services = () => {
     }
   ];
 
-  const handleLearnMore = (service) => {
+  const handleLearnMore = (service: any) => {
     toast({
       title: `${service.name}`,
       description: (
@@ -127,7 +126,7 @@ const Services = () => {
           <div className="bg-terminal-bg/30 p-3 rounded border-l-2 border-terminal-blue">
             <p className="font-semibold text-terminal-blue mb-2">Key Features:</p>
             <ul className="list-disc list-inside text-terminal-text/90 space-y-1">
-              {service.details.features.map((feature, index) => (
+              {service.details.features.map((feature: string, index: number) => (
                 <li key={index} className="leading-relaxed">{feature}</li>
               ))}
             </ul>
@@ -150,7 +149,6 @@ const Services = () => {
   };
 
   const handleGetQuote = () => {
-    // Create a mailto link with pre-filled subject and body
     const subject = encodeURIComponent('Project Quote Request');
     const body = encodeURIComponent(`Hello NodeX Station,
 
@@ -176,38 +174,12 @@ Best regards,
   };
 
   const handleViewPortfolio = () => {
-    // Scroll to portfolio section if it exists on the current page
-    const portfolioElement = document.getElementById('portfolio') || 
-                             document.querySelector('[data-section="portfolio"]') ||
-                             document.querySelector('.portfolio');
-    
-    if (portfolioElement) {
-      portfolioElement.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      // If no portfolio section found, show a toast with GitHub link
-      toast({
-        title: "Portfolio",
-        description: (
-          <div className="space-y-2">
-            <p>Check out our work on GitHub:</p>
-            <a 
-              href="https://github.com/nodexStation" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-terminal-green hover:text-terminal-blue transition-colors"
-            >
-              github.com/nodexStation →
-            </a>
-          </div>
-        ),
-        duration: 5000,
-      });
-    }
+    navigateToSection('portfolio', 'Portfolio');
   };
 
   return (
     <TooltipProvider>
-      <section className="min-h-screen py-20 px-6">
+      <section className="min-h-screen py-20 px-6" data-section="services">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <div className="mb-16">
@@ -229,7 +201,7 @@ Best regards,
               <Tooltip key={service.name}>
                 <TooltipTrigger asChild>
                   <div
-                    className="group bg-terminal-bg/50 rounded-lg border border-terminal-border p-6 hover:border-terminal-green transition-all duration-300 hover:shadow-lg hover:shadow-terminal-green/20 animate-float hover:!animate-none cursor-pointer"
+                    className="group bg-terminal-bg/50 rounded-lg border border-terminal-border p-6 hover:border-terminal-green transition-all duration-300 hover:shadow-lg hover:shadow-terminal-green/20 transform-gpu will-change-transform hover:scale-[1.02] cursor-pointer"
                     style={{ animationDelay: `${index * 0.1}s` }}
                     onClick={() => handleLearnMore(service)}
                   >
@@ -268,6 +240,10 @@ Best regards,
                     <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <button 
                         className="w-full bg-terminal-green/10 hover:bg-terminal-green/20 text-terminal-green py-2 px-4 rounded text-sm border border-terminal-green/30 hover:border-terminal-green/50 transition-all duration-200"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleLearnMore(service);
+                        }}
                       >
                         <span className="syntax-function">learnMore</span>()
                       </button>
