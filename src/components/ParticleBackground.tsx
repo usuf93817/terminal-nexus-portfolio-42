@@ -1,8 +1,14 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, memo, useMemo } from 'react';
 
-const ParticleBackground: React.FC = () => {
+const ParticleBackground: React.FC = memo(() => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const colors = useMemo(() => ['#4ec9b0', '#569cd6', '#dcdcaa', '#c586c0'], []);
+  const particleCount = useMemo(() => {
+    // Reduce particles on mobile for better performance
+    return window.innerWidth < 768 ? 25 : 50;
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -22,8 +28,6 @@ const ParticleBackground: React.FC = () => {
       color: string;
     }> = [];
 
-    const colors = ['#4ec9b0', '#569cd6', '#dcdcaa', '#c586c0'];
-
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -41,7 +45,7 @@ const ParticleBackground: React.FC = () => {
 
     const initParticles = () => {
       particles.length = 0;
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < particleCount; i++) {
         particles.push(createParticle());
       }
     };
@@ -95,15 +99,18 @@ const ParticleBackground: React.FC = () => {
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [colors, particleCount]);
 
   return (
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
       style={{ opacity: 0.3 }}
+      aria-hidden="true"
     />
   );
-};
+});
+
+ParticleBackground.displayName = 'ParticleBackground';
 
 export default ParticleBackground;

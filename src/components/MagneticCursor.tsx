@@ -1,31 +1,33 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, memo } from 'react';
 
-const MagneticCursor: React.FC = () => {
+const MagneticCursor: React.FC = memo(() => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
   const [cursorText, setCursorText] = useState('');
 
-  useEffect(() => {
-    const updateCursor = (e: MouseEvent) => {
-      setPosition({ x: e.clientX, y: e.clientY });
-    };
+  const updateCursor = useCallback((e: MouseEvent) => {
+    setPosition({ x: e.clientX, y: e.clientY });
+  }, []);
 
-    const handleMouseEnter = (e: Event) => {
-      const target = e.target as HTMLElement;
+  const handleMouseEnter = useCallback((e: Event) => {
+    const target = e.target as HTMLElement;
+    if (target && typeof target.hasAttribute === 'function') {
       if (target.hasAttribute('data-cursor-text')) {
         setCursorText(target.getAttribute('data-cursor-text') || '');
         setIsHovering(true);
       } else if (target.tagName === 'BUTTON' || target.tagName === 'A' || target.hasAttribute('data-magnetic')) {
         setIsHovering(true);
       }
-    };
+    }
+  }, []);
 
-    const handleMouseLeave = () => {
-      setIsHovering(false);
-      setCursorText('');
-    };
+  const handleMouseLeave = useCallback(() => {
+    setIsHovering(false);
+    setCursorText('');
+  }, []);
 
+  useEffect(() => {
     document.addEventListener('mousemove', updateCursor);
     document.addEventListener('mouseenter', handleMouseEnter, true);
     document.addEventListener('mouseleave', handleMouseLeave, true);
@@ -35,7 +37,7 @@ const MagneticCursor: React.FC = () => {
       document.removeEventListener('mouseenter', handleMouseEnter, true);
       document.removeEventListener('mouseleave', handleMouseLeave, true);
     };
-  }, []);
+  }, [updateCursor, handleMouseEnter, handleMouseLeave]);
 
   return (
     <>
@@ -66,6 +68,8 @@ const MagneticCursor: React.FC = () => {
       )}
     </>
   );
-};
+});
+
+MagneticCursor.displayName = 'MagneticCursor';
 
 export default MagneticCursor;

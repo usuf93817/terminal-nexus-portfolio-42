@@ -1,12 +1,12 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo, useMemo } from 'react';
 import { Github, Facebook, Instagram, Mail } from 'lucide-react';
 
-const SocialSidebar = () => {
+const SocialSidebar: React.FC = memo(() => {
   const [isVisible, setIsVisible] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  const socialLinks = [
+  const socialLinks = useMemo(() => [
     {
       id: 'email',
       icon: Mail,
@@ -43,7 +43,9 @@ const SocialSidebar = () => {
       hoverColor: 'hover:text-terminal-blue',
       description: 'Like Facebook'
     }
-  ];
+  ], []);
+
+  const isMobile = useMemo(() => window.innerWidth < 768, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -51,17 +53,52 @@ const SocialSidebar = () => {
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      if (!isMobile) {
+        setMousePosition({ x: e.clientX, y: e.clientY });
+      }
     };
 
     window.addEventListener('scroll', handleScroll);
-    window.addEventListener('mousemove', handleMouseMove);
+    if (!isMobile) {
+      window.addEventListener('mousemove', handleMouseMove);
+    }
+    
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('mousemove', handleMouseMove);
+      if (!isMobile) {
+        window.removeEventListener('mousemove', handleMouseMove);
+      }
     };
-  }, []);
+  }, [isMobile]);
 
+  if (isMobile) {
+    // Mobile bottom navigation
+    return (
+      <div className={`fixed bottom-0 left-0 right-0 z-40 transition-all duration-500 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full'
+      }`}>
+        <div className="bg-terminal-bg/95 border-t border-terminal-border/50 backdrop-blur-md px-4 py-3">
+          <div className="flex justify-center space-x-8">
+            {socialLinks.map((social) => (
+              <a
+                key={social.id}
+                href={social.url}
+                target={social.id !== 'email' ? '_blank' : undefined}
+                rel={social.id !== 'email' ? 'noopener noreferrer' : undefined}
+                className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-all duration-300 ${social.hoverColor} hover:bg-terminal-green/10`}
+                aria-label={social.description}
+              >
+                <social.icon className={`w-5 h-5 ${social.color}`} />
+                <span className="text-xs font-mono text-terminal-text/60">{social.label}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop sidebar
   return (
     <div className={`fixed left-4 top-1/2 transform -translate-y-1/2 z-40 transition-all duration-500 ${
       isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-20'
@@ -72,7 +109,7 @@ const SocialSidebar = () => {
       </div>
 
       {/* Social Media Cards */}
-      <div className="space-y-4">
+      <div className="space-y-4" role="navigation" aria-label="Social media links">
         {socialLinks.map((social, index) => (
           <div
             key={social.id}
@@ -90,6 +127,7 @@ const SocialSidebar = () => {
               className={`block w-12 h-12 bg-terminal-bg/20 border border-terminal-border/30 rounded-lg backdrop-blur-md transition-all duration-300 hover:scale-110 hover:border-terminal-green/50 group ${social.hoverColor}`}
               data-magnetic
               data-cursor-text={social.description}
+              aria-label={social.description}
             >
               {/* Scan Line */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-terminal-green/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 rounded-lg" />
@@ -142,6 +180,8 @@ const SocialSidebar = () => {
       </div>
     </div>
   );
-};
+});
+
+SocialSidebar.displayName = 'SocialSidebar';
 
 export default SocialSidebar;
