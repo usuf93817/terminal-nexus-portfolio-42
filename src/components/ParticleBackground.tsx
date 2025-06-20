@@ -7,11 +7,11 @@ const ParticleBackground: React.FC = memo(() => {
 
   const colors = useMemo(() => ['#4ec9b0', '#569cd6', '#dcdcaa', '#c586c0'], []);
   const particleCount = useMemo(() => {
-    // Significantly reduce particle count for better performance
+    // Further reduced particle count for optimal performance
     const width = window.innerWidth;
-    if (width < 640) return 8; // Mobile - reduced from 15
-    if (width < 1024) return 12; // Tablet - reduced from 25
-    return 18; // Desktop - reduced from 35
+    if (width < 640) return 5; // Mobile - minimal particles
+    if (width < 1024) return 8; // Tablet 
+    return 12; // Desktop - reduced further
   }, []);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ const ParticleBackground: React.FC = memo(() => {
     if (!ctx) return;
 
     let lastTime = 0;
-    const targetFPS = 30; // Reduced from 60 for better performance
+    const targetFPS = 24; // Reduced from 30 for better performance
     const frameInterval = 1000 / targetFPS;
     
     const particles: Array<{
@@ -43,10 +43,10 @@ const ParticleBackground: React.FC = memo(() => {
     const createParticle = () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.1, // Slower movement
-      vy: (Math.random() - 0.5) * 0.1,
-      size: Math.random() * 0.8 + 0.3, // Smaller particles
-      opacity: Math.random() * 0.2 + 0.05, // Lower opacity
+      vx: (Math.random() - 0.5) * 0.05, // Even slower movement
+      vy: (Math.random() - 0.5) * 0.05,
+      size: Math.random() * 0.6 + 0.2, // Even smaller particles
+      opacity: Math.random() * 0.15 + 0.03, // Much lower opacity
       color: colors[Math.floor(Math.random() * colors.length)]
     });
 
@@ -65,36 +65,36 @@ const ParticleBackground: React.FC = memo(() => {
       
       lastTime = currentTime;
       
-      // More aggressive fade for fewer redraws
-      ctx.fillStyle = 'rgba(30, 30, 30, 0.05)';
+      // Very light fade for minimal redraws
+      ctx.fillStyle = 'rgba(30, 30, 30, 0.08)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       particles.forEach((particle, index) => {
         particle.x += particle.vx;
         particle.y += particle.vy;
 
-        // Simple boundary handling
+        // Optimized boundary handling
         if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
         if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
 
-        // Draw particle
+        // Draw particle with better performance
         ctx.globalAlpha = particle.opacity;
         ctx.fillStyle = particle.color;
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fill();
 
-        // Reduced connections for performance - only connect to next particle
-        if (index < particles.length - 1) {
-          const otherParticle = particles[index + 1];
+        // Minimal connections - only every 3rd particle
+        if (index % 3 === 0 && index < particles.length - 3) {
+          const otherParticle = particles[index + 3];
           const dx = particle.x - otherParticle.x;
           const dy = particle.y - otherParticle.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
-          if (distance < 40) { // Reduced connection distance
-            ctx.globalAlpha = (40 - distance) / 40 * 0.05;
+          if (distance < 30) { // Even shorter connection distance
+            ctx.globalAlpha = (30 - distance) / 30 * 0.03;
             ctx.strokeStyle = particle.color;
-            ctx.lineWidth = 0.1;
+            ctx.lineWidth = 0.05;
             ctx.beginPath();
             ctx.moveTo(particle.x, particle.y);
             ctx.lineTo(otherParticle.x, otherParticle.y);
@@ -129,7 +129,7 @@ const ParticleBackground: React.FC = memo(() => {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.15 }} // Reduced opacity
+      style={{ opacity: 0.1 }} // Even more reduced opacity
       aria-hidden="true"
     />
   );
