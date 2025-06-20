@@ -1,9 +1,7 @@
-
 import React, { useState, useEffect, memo, useMemo, useCallback } from 'react';
 import { Cloud, Sun, CloudRain, CloudSnow, Wind, Thermometer, Eye, Droplets, MapPin, Clock, Wifi, ChevronDown, ChevronUp } from 'lucide-react';
 import { locationService, LocationData } from '../services/locationService';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-
 interface WeatherData {
   temperature: number;
   condition: string;
@@ -16,7 +14,6 @@ interface WeatherData {
   uvIndex: number;
   pressure: number;
 }
-
 const WeatherWidget: React.FC = memo(() => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [location, setLocation] = useState<LocationData | null>(null);
@@ -42,7 +39,6 @@ const WeatherWidget: React.FC = memo(() => {
   // Memoized weather icon component
   const weatherIcon = useMemo(() => {
     if (!weather) return null;
-    
     const getWeatherIcon = (condition: string) => {
       const iconClass = "w-4 h-4";
       switch (condition.toLowerCase()) {
@@ -62,7 +58,6 @@ const WeatherWidget: React.FC = memo(() => {
           return <Cloud className={`${iconClass} text-gray-400`} />;
       }
     };
-    
     return getWeatherIcon(weather.condition);
   }, [weather?.condition]);
 
@@ -70,21 +65,21 @@ const WeatherWidget: React.FC = memo(() => {
   const formattedTime = useMemo(() => {
     if (location?.timezone) {
       try {
-        return currentTime.toLocaleTimeString('en-US', { 
+        return currentTime.toLocaleTimeString('en-US', {
           timeZone: location.timezone,
           hour12: false,
           hour: '2-digit',
           minute: '2-digit'
         });
       } catch (error) {
-        return currentTime.toLocaleTimeString('en-US', { 
+        return currentTime.toLocaleTimeString('en-US', {
           hour12: false,
           hour: '2-digit',
           minute: '2-digit'
         });
       }
     }
-    return currentTime.toLocaleTimeString('en-US', { 
+    return currentTime.toLocaleTimeString('en-US', {
       hour12: false,
       hour: '2-digit',
       minute: '2-digit'
@@ -93,20 +88,16 @@ const WeatherWidget: React.FC = memo(() => {
 
   // Check if mobile
   const isMobile = useMemo(() => window.innerWidth < 768, []);
-
   useEffect(() => {
     const timeInterval = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
-
     const fetchData = async () => {
       setLoading(true);
       try {
         const locationData = await locationService.getCurrentLocation();
         setLocation(locationData);
-        
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
         const weatherData = generateWeatherData(locationData);
         setWeather(weatherData);
         setError(null);
@@ -126,44 +117,31 @@ const WeatherWidget: React.FC = memo(() => {
         setLoading(false);
       }
     };
-
     fetchData();
     const weatherInterval = setInterval(fetchData, 600000);
-    
     return () => {
       clearInterval(timeInterval);
       clearInterval(weatherInterval);
     };
   }, [generateWeatherData]);
-
   if (loading) {
-    return (
-      <div className="fixed top-4 right-4 z-50">
+    return <div className="fixed top-4 right-4 z-50">
         <div className="w-14 h-14 bg-terminal-bg/98 border-2 border-terminal-border rounded-xl backdrop-blur-md shadow-2xl flex items-center justify-center">
           <div className="animate-spin w-5 h-5 border-2 border-terminal-green/30 border-t-terminal-green rounded-full"></div>
         </div>
-      </div>
-    );
+      </div>;
   }
-
   if (error || !weather) {
-    return (
-      <div className="fixed top-4 right-4 z-50">
+    return <div className="fixed top-4 right-4 z-50">
         <div className="w-14 h-14 bg-terminal-bg/98 border-2 border-red-500/70 rounded-xl backdrop-blur-md shadow-2xl flex items-center justify-center">
           <div className="w-3 h-3 bg-red-400 rounded-full animate-pulse"></div>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="fixed top-4 right-4 z-50">
+  return <div className="fixed top-4 right-4 z-50">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
-          <button
-            className="group w-14 h-14 bg-terminal-bg/98 border-2 border-terminal-border rounded-xl backdrop-blur-md shadow-2xl transition-all duration-500 hover:border-terminal-green/80 hover:shadow-terminal-green/20 hover:shadow-2xl hover:scale-110 flex items-center justify-center relative overflow-hidden"
-            aria-label="Weather information"
-          >
+          <button className="group w-14 h-14 bg-terminal-bg/98 border-2 border-terminal-border rounded-xl backdrop-blur-md shadow-2xl transition-all duration-500 hover:border-terminal-green/80 hover:shadow-terminal-green/20 hover:shadow-2xl hover:scale-110 flex items-center justify-center relative overflow-hidden" aria-label="Weather information">
             {/* Background glow effect */}
             <div className="absolute inset-0 bg-gradient-to-br from-terminal-green/5 via-transparent to-terminal-blue/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             
@@ -179,15 +157,11 @@ const WeatherWidget: React.FC = memo(() => {
             </div>
             
             {/* Scan line effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-terminal-green/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-terminal-green/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 my-[12px]" />
           </button>
         </PopoverTrigger>
         
-        <PopoverContent 
-          className="w-96 p-0 bg-terminal-bg/98 border-2 border-terminal-border backdrop-blur-xl shadow-2xl shadow-terminal-green/10 rounded-xl" 
-          align="end"
-          sideOffset={12}
-        >
+        <PopoverContent className="w-96 p-0 bg-terminal-bg/98 border-2 border-terminal-border backdrop-blur-xl shadow-2xl shadow-terminal-green/10 rounded-xl" align="end" sideOffset={12}>
           {/* Enhanced backdrop blur overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-terminal-bg/95 to-terminal-bg/90 rounded-xl backdrop-blur-xl" />
           
@@ -292,10 +266,7 @@ const WeatherWidget: React.FC = memo(() => {
           <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-terminal-green/5 via-transparent to-terminal-blue/5 pointer-events-none" />
         </PopoverContent>
       </Popover>
-    </div>
-  );
+    </div>;
 });
-
 WeatherWidget.displayName = 'WeatherWidget';
-
 export default WeatherWidget;
