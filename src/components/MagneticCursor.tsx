@@ -8,11 +8,9 @@ const MagneticCursor: React.FC = memo(() => {
   const [isVisible, setIsVisible] = useState(false);
 
   const updateCursor = useCallback((e: MouseEvent) => {
-    // Use requestAnimationFrame for smoother updates
-    requestAnimationFrame(() => {
-      setPosition({ x: e.clientX, y: e.clientY });
-      if (!isVisible) setIsVisible(true);
-    });
+    // Throttle updates for better performance
+    setPosition({ x: e.clientX, y: e.clientY });
+    if (!isVisible) setIsVisible(true);
   }, [isVisible]);
 
   const handleMouseEnter = useCallback((e: Event) => {
@@ -33,15 +31,12 @@ const MagneticCursor: React.FC = memo(() => {
   }, []);
 
   useEffect(() => {
-    // Throttle mouse move events for better performance
+    // Reduced throttling for smoother movement
     let ticking = false;
     const throttledUpdateCursor = (e: MouseEvent) => {
       if (!ticking) {
-        requestAnimationFrame(() => {
-          updateCursor(e);
-          ticking = false;
-        });
-        ticking = true;
+        updateCursor(e);
+        ticking = false; // Removed requestAnimationFrame throttling
       }
     };
 
@@ -61,9 +56,7 @@ const MagneticCursor: React.FC = memo(() => {
   return (
     <>
       <div
-        className={`fixed pointer-events-none z-50 mix-blend-difference transition-all duration-200 ease-out ${
-          isHovering ? 'scale-150' : 'scale-100'
-        }`}
+        className="fixed pointer-events-none z-50 mix-blend-difference transition-transform duration-100 ease-out"
         style={{
           left: position.x - 8,
           top: position.y - 8,
@@ -73,17 +66,15 @@ const MagneticCursor: React.FC = memo(() => {
           borderRadius: '50%',
           transform: `translate(-50%, -50%) scale(${isHovering ? 1.5 : 1})`,
           filter: 'blur(0.5px)',
-          boxShadow: isHovering ? '0 0 20px rgba(78, 201, 176, 0.6)' : '0 0 10px rgba(78, 201, 176, 0.3)',
-          transition: 'all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+          boxShadow: isHovering ? '0 0 15px rgba(78, 201, 176, 0.4)' : '0 0 8px rgba(78, 201, 176, 0.2)',
         }}
       />
       {cursorText && (
         <div
-          className="fixed pointer-events-none z-50 bg-terminal-bg/98 border border-terminal-green/60 text-terminal-green px-3 py-2 rounded-lg text-sm font-mono backdrop-blur-md shadow-xl transition-all duration-150 ease-out"
+          className="fixed pointer-events-none z-50 bg-terminal-bg/95 border border-terminal-green/60 text-terminal-green px-2 py-1 rounded text-xs font-mono backdrop-blur-sm shadow-lg transition-opacity duration-100"
           style={{
-            left: position.x + 20,
-            top: position.y - 40,
-            transform: 'translateY(0)',
+            left: position.x + 15,
+            top: position.y - 30,
             opacity: 1
           }}
         >

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo, useMemo, useCallback } from 'react';
-import { Cloud, Sun, CloudRain, CloudSnow, Wind, Thermometer, Eye, Droplets, MapPin, Clock, Wifi, ChevronDown, ChevronUp } from 'lucide-react';
+import { Cloud, Sun, CloudRain, CloudSnow, Wind, Thermometer, Eye, Droplets, MapPin, Clock } from 'lucide-react';
 import { locationService, LocationData } from '../services/locationService';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
@@ -91,15 +91,17 @@ const WeatherWidget: React.FC = memo(() => {
   // Check if mobile
   const isMobile = useMemo(() => window.innerWidth < 768, []);
   useEffect(() => {
+    // Optimized timer with less frequent updates
     const timeInterval = setInterval(() => {
       setCurrentTime(new Date());
-    }, 1000);
+    }, 5000); // Update every 5 seconds instead of 1
+
     const fetchData = async () => {
       setLoading(true);
       try {
         const locationData = await locationService.getCurrentLocation();
         setLocation(locationData);
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 500)); // Reduced delay
         const weatherData = generateWeatherData(locationData);
         setWeather(weatherData);
         setError(null);
@@ -119,8 +121,10 @@ const WeatherWidget: React.FC = memo(() => {
         setLoading(false);
       }
     };
+
     fetchData();
-    const weatherInterval = setInterval(fetchData, 600000);
+    const weatherInterval = setInterval(fetchData, 300000); // Reduced from 600000
+
     return () => {
       clearInterval(timeInterval);
       clearInterval(weatherInterval);
@@ -129,7 +133,7 @@ const WeatherWidget: React.FC = memo(() => {
   if (loading) {
     return (
       <div className="fixed top-4 right-4 z-50">
-        <div className="w-16 h-16 bg-terminal-bg/95 border-2 border-terminal-green/50 rounded-xl backdrop-blur-md shadow-2xl flex items-center justify-center">
+        <div className="w-16 h-16 bg-terminal-bg/95 border border-terminal-green/50 rounded-xl backdrop-blur-md shadow-xl flex items-center justify-center">
           <div className="animate-spin w-6 h-6 border-2 border-terminal-green/30 border-t-terminal-green rounded-full"></div>
         </div>
       </div>
@@ -138,7 +142,7 @@ const WeatherWidget: React.FC = memo(() => {
   if (error || !weather) {
     return (
       <div className="fixed top-4 right-4 z-50">
-        <div className="w-16 h-16 bg-terminal-bg/95 border-2 border-red-500/70 rounded-xl backdrop-blur-md shadow-2xl flex items-center justify-center">
+        <div className="w-16 h-16 bg-terminal-bg/95 border border-red-500/70 rounded-xl backdrop-blur-md shadow-xl flex items-center justify-center">
           <div className="w-4 h-4 bg-red-400 rounded-full animate-pulse"></div>
         </div>
       </div>
@@ -150,16 +154,16 @@ const WeatherWidget: React.FC = memo(() => {
         <PopoverTrigger asChild>
           <button
             aria-label="Weather information"
-            className="group w-16 h-16 bg-terminal-bg/95 border-2 border-terminal-green/60 rounded-xl backdrop-blur-md shadow-2xl transition-all duration-300 hover:border-terminal-green hover:shadow-terminal-green/30 hover:shadow-2xl hover:scale-105 flex items-center justify-center relative overflow-hidden"
+            className="group w-16 h-16 bg-terminal-bg/95 border border-terminal-green/60 rounded-xl backdrop-blur-md shadow-xl transition-all duration-200 hover:border-terminal-green hover:shadow-terminal-green/20 hover:shadow-xl hover:scale-105 flex items-center justify-center relative overflow-hidden"
           >
             {/* Enhanced glow effect */}
             <div className="absolute inset-0 bg-gradient-to-br from-terminal-green/10 via-transparent to-terminal-blue/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             
             <div className="flex flex-col items-center justify-center relative z-10 space-y-1">
-              <div className="transform transition-all duration-300 group-hover:scale-110">
+              <div className="transform transition-transform duration-200 group-hover:scale-110">
                 {weatherIcon}
               </div>
-              <span className="text-terminal-green text-sm font-mono font-bold transition-all duration-300 group-hover:text-white">
+              <span className="text-terminal-green text-sm font-mono font-bold transition-colors duration-200 group-hover:text-white">
                 {weather.temperature}°
               </span>
             </div>
@@ -170,7 +174,7 @@ const WeatherWidget: React.FC = memo(() => {
         </PopoverTrigger>
         
         <PopoverContent 
-          className="w-80 p-0 bg-terminal-bg/98 border-2 border-terminal-green/60 backdrop-blur-xl shadow-2xl shadow-terminal-green/20 rounded-xl" 
+          className="w-80 p-0 bg-terminal-bg/98 border border-terminal-green/60 backdrop-blur-xl shadow-2xl shadow-terminal-green/20 rounded-xl" 
           align="end" 
           sideOffset={12}
         >
@@ -201,7 +205,7 @@ const WeatherWidget: React.FC = memo(() => {
                   <span className="font-mono">{weather.location}</span>
                 </div>
               </div>
-              <div className="flex items-center justify-center w-16 h-16 bg-terminal-bg/80 rounded-xl border-2 border-terminal-green/40 backdrop-blur-sm">
+              <div className="flex items-center justify-center w-16 h-16 bg-terminal-bg/80 rounded-xl border border-terminal-green/40 backdrop-blur-sm">
                 <div className="scale-[1.8]">
                   {weatherIcon}
                 </div>
@@ -209,7 +213,7 @@ const WeatherWidget: React.FC = memo(() => {
             </div>
 
             {/* Time Display */}
-            <div className="bg-terminal-bg/80 rounded-xl p-4 border-2 border-terminal-green/40 backdrop-blur-sm">
+            <div className="bg-terminal-bg/80 rounded-xl p-4 border border-terminal-green/40 backdrop-blur-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <Clock className="w-5 h-5 text-terminal-blue" />
