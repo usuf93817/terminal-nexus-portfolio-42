@@ -1,113 +1,80 @@
-
 import React, { useState, useEffect } from 'react';
 import { Code, Database, Brain, Globe } from 'lucide-react';
 import { navigateToSection } from '../utils/navigation';
-
 const Hero = () => {
   const [displayText, setDisplayText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const [loopNum, setLoopNum] = useState(0);
   const [typingSpeed, setTypingSpeed] = useState(150);
-
-  const textArray = [
-    'Welcome to NodeXstation',
-    'MERN Stack Developers',
-    'Three.js Specialists',
-    'AI Agent Builders',
-    'Data Scraping Experts'
-  ];
-
+  const textArray = ['Welcome to NodeXstation', 'MERN Stack Developers', 'Three.js Specialists', 'AI Agent Builders', 'Data Scraping Experts'];
   useEffect(() => {
     const handleTyping = () => {
       const current = loopNum % textArray.length;
       const fullText = textArray[current];
-
-      setDisplayText(
-        isDeleting 
-          ? fullText.substring(0, currentIndex - 1)
-          : fullText.substring(0, currentIndex + 1)
-      );
-
+      setDisplayText(isDeleting ? fullText.substring(0, currentIndex - 1) : fullText.substring(0, currentIndex + 1));
       setTypingSpeed(isDeleting ? 50 : 150);
-
       if (!isDeleting && currentIndex === fullText.length) {
         setTimeout(() => setIsDeleting(true), 1000);
       } else if (isDeleting && currentIndex === 0) {
         setIsDeleting(false);
         setLoopNum(loopNum + 1);
       }
-
       setCurrentIndex(isDeleting ? currentIndex - 1 : currentIndex + 1);
     };
-
     const timer = setTimeout(handleTyping, typingSpeed);
     return () => clearTimeout(timer);
   }, [currentIndex, isDeleting, loopNum, typingSpeed, textArray]);
-
-  const services = [
-    {
-      icon: Code,
-      name: 'MERN Stack',
-      description: 'Full-stack JavaScript development',
-      color: 'text-terminal-green'
-    },
-    {
-      icon: Globe,
-      name: 'Three.js',
-      description: '3D web experiences',
-      color: 'text-terminal-blue'
-    },
-    {
-      icon: Brain,
-      name: 'AI Agents',
-      description: 'Intelligent automation',
-      color: 'text-terminal-purple'
-    },
-    {
-      icon: Database,
-      name: 'Data Scraping',
-      description: 'Automated data extraction',
-      color: 'text-terminal-yellow'
-    }
-  ];
-
+  const services = [{
+    icon: Code,
+    name: 'MERN Stack',
+    description: 'Full-stack JavaScript development',
+    color: 'text-terminal-green'
+  }, {
+    icon: Globe,
+    name: 'Three.js',
+    description: '3D web experiences',
+    color: 'text-terminal-blue'
+  }, {
+    icon: Brain,
+    name: 'AI Agents',
+    description: 'Intelligent automation',
+    color: 'text-terminal-purple'
+  }, {
+    icon: Database,
+    name: 'Data Scraping',
+    description: 'Automated data extraction',
+    color: 'text-terminal-yellow'
+  }];
   const handleExploreProjects = () => {
     navigateToSection('portfolio', 'Portfolio');
   };
-
   const handleContactUs = () => {
     navigateToSection('contact', 'Contact');
   };
-
-  return (
-    <section className="min-h-screen flex items-center justify-center relative overflow-hidden py-20 px-6">
+  return <section className="min-h-screen flex items-center justify-center relative overflow-hidden py-20 px-6">
       {/* Animated Background Grid */}
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
+        <div style={{
+        backgroundImage: `
             linear-gradient(rgba(78, 201, 176, 0.1) 1px, transparent 1px),
             linear-gradient(90deg, rgba(78, 201, 176, 0.1) 1px, transparent 1px)
           `,
-          backgroundSize: '50px 50px',
-          animation: 'grid-move 20s linear infinite'
-        }}></div>
+        backgroundSize: '50px 50px',
+        animation: 'grid-move 20s linear infinite'
+      }} className="absolute inset-0 my-[30px]"></div>
       </div>
 
       {/* Floating Particles */}
       <div className="absolute inset-0 pointer-events-none">
-        {Array.from({ length: 30 }, (_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-terminal-green rounded-full opacity-60"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 2}s`
-            }}
-          />
-        ))}
+        {Array.from({
+        length: 30
+      }, (_, i) => <div key={i} className="absolute w-1 h-1 bg-terminal-green rounded-full opacity-60" style={{
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`,
+        animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
+        animationDelay: `${Math.random() * 2}s`
+      }} />)}
       </div>
 
       <div className="max-w-6xl mx-auto text-center relative z-10">
@@ -158,17 +125,13 @@ const Hero = () => {
 
         {/* Services Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {services.map((service, index) => (
-            <div
-              key={service.name}
-              className="bg-terminal-bg/50 border border-terminal-border rounded-lg p-6 hover:border-terminal-green transition-all duration-300 hover:scale-105 group"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
+          {services.map((service, index) => <div key={service.name} className="bg-terminal-bg/50 border border-terminal-border rounded-lg p-6 hover:border-terminal-green transition-all duration-300 hover:scale-105 group" style={{
+          animationDelay: `${index * 0.1}s`
+        }}>
               <service.icon className={`w-8 h-8 ${service.color} mb-4 group-hover:scale-110 transition-transform`} />
               <h3 className="text-terminal-text font-semibold mb-2">{service.name}</h3>
               <p className="text-terminal-text/70 text-sm">{service.description}</p>
-            </div>
-          ))}
+            </div>)}
         </div>
 
         {/* Call to Action */}
@@ -181,16 +144,10 @@ const Hero = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button 
-              onClick={handleExploreProjects}
-              className="bg-terminal-green text-terminal-bg px-8 py-3 rounded-lg font-semibold hover:bg-terminal-green/90 transition-colors hover-scale"
-            >
+            <button onClick={handleExploreProjects} className="bg-terminal-green text-terminal-bg px-8 py-3 rounded-lg font-semibold hover:bg-terminal-green/90 transition-colors hover-scale">
               <span className="syntax-function">exploreProjects</span>()
             </button>
-            <button 
-              onClick={handleContactUs}
-              className="border border-terminal-green text-terminal-green px-8 py-3 rounded-lg font-semibold hover:bg-terminal-green/10 transition-colors hover-scale"
-            >
+            <button onClick={handleContactUs} className="border border-terminal-green text-terminal-green px-8 py-3 rounded-lg font-semibold hover:bg-terminal-green/10 transition-colors hover-scale">
               <span className="syntax-function">contactUs</span>()
             </button>
           </div>
@@ -210,8 +167,6 @@ const Hero = () => {
           75% { transform: translateY(-15px) translateX(3px); }
         }
       `}</style>
-    </section>
-  );
+    </section>;
 };
-
 export default Hero;
