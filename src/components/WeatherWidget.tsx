@@ -126,7 +126,7 @@ const WeatherWidget: React.FC = memo(() => {
   }, [generateWeatherData]);
   if (loading) {
     return <div className="fixed top-4 right-4 z-50">
-        <div className="w-14 h-14 bg-terminal-bg/98 border-2 border-terminal-border rounded-xl backdrop-blur-md shadow-2xl flex items-center justify-center">
+        <div className="w-14 h-14 bg-terminal-bg/98 border-2 border-terminal-border rounded-xl backdrop-blur-md shadow-2xl flex items-center justify-center my-[30px]">
           <div className="animate-spin w-5 h-5 border-2 border-terminal-green/30 border-t-terminal-green rounded-full"></div>
         </div>
       </div>;
