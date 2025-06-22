@@ -163,7 +163,7 @@ const WeatherWidget: React.FC = memo(() => {
         <PopoverTrigger asChild>
           <button aria-label="Weather information" className="group w-16 h-16 bg-terminal-bg/98 border border-terminal-green/70 rounded-xl backdrop-blur-md shadow-xl transition-all duration-150 hover:border-terminal-green hover:shadow-terminal-green/25 hover:shadow-xl hover:scale-102 flex items-center justify-center relative overflow-hidden">
             {/* Smoother glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-br from-terminal-green/15 via-transparent to-terminal-blue/15 opacity-0 group-hover:opacity-100 transition-opacity duration-200 my-0" />
+            <div className="absolute inset-0 bg-gradient-to-br from-terminal-green/15 via-transparent to-terminal-blue/15 opacity-0 group-hover:opacity-100 transition-opacity duration-200 my-[55px] py-[12px] px-[12px]" />
             
             <div className="flex flex-col items-center justify-center relative z-10 space-y-1">
               <div className="transform transition-transform duration-150 group-hover:scale-110">
