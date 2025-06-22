@@ -2,7 +2,6 @@ import React, { useState, useEffect, memo, useMemo, useCallback } from 'react';
 import { Cloud, Sun, CloudRain, CloudSnow, Wind, Thermometer, Eye, Droplets, MapPin, Clock } from 'lucide-react';
 import { locationService, LocationData } from '../services/locationService';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-
 interface WeatherData {
   temperature: number;
   condition: string;
@@ -15,7 +14,6 @@ interface WeatherData {
   uvIndex: number;
   pressure: number;
 }
-
 const WeatherWidget: React.FC = memo(() => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [location, setLocation] = useState<LocationData | null>(null);
@@ -27,19 +25,21 @@ const WeatherWidget: React.FC = memo(() => {
   // More accurate weather data generation
   const generateWeatherData = useCallback((locationData: LocationData): WeatherData => {
     // More realistic temperature based on location
-    const baseTemp = locationData.lat > 0 ? 
-      (locationData.lat > 40 ? 12 : 22) : // Northern regions cooler
-      (locationData.lat < -40 ? 8 : 25);   // Southern regions vary
-    
+    const baseTemp = locationData.lat > 0 ? locationData.lat > 40 ? 12 : 22 :
+    // Northern regions cooler
+    locationData.lat < -40 ? 8 : 25; // Southern regions vary
+
     const conditions = ["Sunny", "Partly Cloudy", "Cloudy", "Clear"];
     const selectedCondition = conditions[Math.floor(Math.random() * conditions.length)];
-    
     return {
       temperature: Math.round(baseTemp + Math.random() * 15),
       condition: selectedCondition,
-      humidity: Math.round(40 + Math.random() * 40), // More realistic humidity
-      windSpeed: Math.round(3 + Math.random() * 15), // Realistic wind speeds
-      visibility: Math.round(10 + Math.random() * 5), // Better visibility range
+      humidity: Math.round(40 + Math.random() * 40),
+      // More realistic humidity
+      windSpeed: Math.round(3 + Math.random() * 15),
+      // Realistic wind speeds
+      visibility: Math.round(10 + Math.random() * 5),
+      // Better visibility range
       location: `${locationData.city}, ${locationData.region}`,
       icon: "partly-cloudy",
       feelsLike: Math.round(baseTemp + Math.random() * 12),
@@ -135,7 +135,6 @@ const WeatherWidget: React.FC = memo(() => {
         setLoading(false);
       }
     };
-
     fetchData();
     // More frequent updates for accuracy
     const weatherInterval = setInterval(fetchData, 120000); // Update every 2 minutes
@@ -146,39 +145,29 @@ const WeatherWidget: React.FC = memo(() => {
     };
   }, [generateWeatherData]);
   if (loading) {
-    return (
-      <div className="fixed top-4 right-4 z-50">
-        <div className="w-16 h-16 bg-terminal-bg/95 border border-terminal-green/50 rounded-xl backdrop-blur-md shadow-xl flex items-center justify-center">
+    return <div className="fixed top-4 right-4 z-50">
+        <div className="w-16 h-16 bg-terminal-bg/95 border border-terminal-green/50 rounded-xl backdrop-blur-md shadow-xl flex items-center justify-center my-[55px]">
           <div className="animate-spin w-6 h-6 border-2 border-terminal-green/30 border-t-terminal-green rounded-full"></div>
         </div>
-      </div>
-    );
+      </div>;
   }
   if (error || !weather) {
-    return (
-      <div className="fixed top-4 right-4 z-50">
+    return <div className="fixed top-4 right-4 z-50">
         <div className="w-16 h-16 bg-terminal-bg/95 border border-red-500/70 rounded-xl backdrop-blur-md shadow-xl flex items-center justify-center">
           <div className="w-4 h-4 bg-red-400 rounded-full animate-pulse"></div>
         </div>
-      </div>
-    );
+      </div>;
   }
-  return (
-    <div className="fixed top-4 right-4 z-50">
+  return <div className="fixed top-4 right-4 z-50">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
-          <button
-            aria-label="Weather information"
-            className="group w-16 h-16 bg-terminal-bg/98 border border-terminal-green/70 rounded-xl backdrop-blur-md shadow-xl transition-all duration-150 hover:border-terminal-green hover:shadow-terminal-green/25 hover:shadow-xl hover:scale-102 flex items-center justify-center relative overflow-hidden"
-          >
+          <button aria-label="Weather information" className="group w-16 h-16 bg-terminal-bg/98 border border-terminal-green/70 rounded-xl backdrop-blur-md shadow-xl transition-all duration-150 hover:border-terminal-green hover:shadow-terminal-green/25 hover:shadow-xl hover:scale-102 flex items-center justify-center relative overflow-hidden">
             {/* Smoother glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-br from-terminal-green/15 via-transparent to-terminal-blue/15 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+            <div className="absolute inset-0 bg-gradient-to-br from-terminal-green/15 via-transparent to-terminal-blue/15 opacity-0 group-hover:opacity-100 transition-opacity duration-200 my-0" />
             
             <div className="flex flex-col items-center justify-center relative z-10 space-y-1">
               <div className="transform transition-transform duration-150 group-hover:scale-110">
-                {weather && (
-                  <Sun className="w-5 h-5 text-yellow-400" />
-                )}
+                {weather && <Sun className="w-5 h-5 text-yellow-400" />}
               </div>
               <span className="text-terminal-green text-sm font-mono font-bold transition-colors duration-150 group-hover:text-white">
                 {weather?.temperature}°
@@ -190,11 +179,7 @@ const WeatherWidget: React.FC = memo(() => {
           </button>
         </PopoverTrigger>
         
-        <PopoverContent 
-          className="w-80 p-0 bg-terminal-bg/99 border border-terminal-green/70 backdrop-blur-xl shadow-2xl shadow-terminal-green/25 rounded-xl" 
-          align="end" 
-          sideOffset={12}
-        >
+        <PopoverContent className="w-80 p-0 bg-terminal-bg/99 border border-terminal-green/70 backdrop-blur-xl shadow-2xl shadow-terminal-green/25 rounded-xl" align="end" sideOffset={12}>
           {/* Strong background */}
           <div className="absolute inset-0 bg-terminal-bg/99 rounded-xl backdrop-blur-xl" />
           
@@ -299,9 +284,7 @@ const WeatherWidget: React.FC = memo(() => {
           <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-terminal-green/15 via-transparent to-terminal-blue/15 pointer-events-none" />
         </PopoverContent>
       </Popover>
-    </div>
-  );
+    </div>;
 });
-
 WeatherWidget.displayName = 'WeatherWidget';
 export default WeatherWidget;
