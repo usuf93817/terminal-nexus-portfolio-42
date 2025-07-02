@@ -114,38 +114,7 @@ const Services = () => {
   ];
 
   const handleLearnMore = (service: any) => {
-    toast({
-      title: `${service.name}`,
-      description: (
-        <div className="space-y-4 text-sm max-w-md">
-          <div className="bg-terminal-bg/30 p-3 rounded border-l-2 border-terminal-green">
-            <p className="font-semibold text-terminal-green mb-2">Overview:</p>
-            <p className="text-terminal-text/90 leading-relaxed">{service.details.overview}</p>
-          </div>
-          
-          <div className="bg-terminal-bg/30 p-3 rounded border-l-2 border-terminal-blue">
-            <p className="font-semibold text-terminal-blue mb-2">Key Features:</p>
-            <ul className="list-disc list-inside text-terminal-text/90 space-y-1">
-              {service.details.features.map((feature: string, index: number) => (
-                <li key={index} className="leading-relaxed">{feature}</li>
-              ))}
-            </ul>
-          </div>
-          
-          <div className="grid grid-cols-1 gap-3">
-            <div className="bg-terminal-bg/30 p-3 rounded border-l-2 border-terminal-yellow">
-              <p className="font-semibold text-terminal-yellow mb-1">Timeline:</p>
-              <p className="text-terminal-text/90">{service.details.timeline}</p>
-            </div>
-            <div className="bg-terminal-bg/30 p-3 rounded border-l-2 border-terminal-purple">
-              <p className="font-semibold text-terminal-purple mb-1">Pricing:</p>
-              <p className="text-terminal-text/90">{service.details.pricing}</p>
-            </div>
-          </div>
-        </div>
-      ),
-      duration: 15000,
-    });
+    navigateToSection('contact', 'Contact');
   };
 
   const handleGetQuote = () => {
