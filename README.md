@@ -1,73 +1,164 @@
-# Welcome to your Lovable project
+# NodeXstation Portfolio
 
-## Project info
+A modern, professional portfolio website showcasing full-stack development services and expertise.
 
-**URL**: https://lovable.dev/projects/839b0307-aa28-46d8-ba41-bee9838dcb64
+## 🚀 Features
 
-## How can I edit this code?
+- **Interactive 3D Elements**: Three.js visualizations and particle systems
+- **AI-Powered Chat**: Real-time assistance with multiple AI providers
+- **Professional Services**: Comprehensive service offerings with detailed information
+- **Modern Design**: Terminal-inspired theme with smooth animations
+- **Responsive Layout**: Optimized for all device sizes
+- **Performance Optimized**: Lazy loading and efficient rendering
+- **Accessibility**: ARIA labels and keyboard navigation support
+- **Error Handling**: Graceful error boundaries with recovery options
 
-There are several ways of editing your application.
+## 🛠️ Tech Stack
 
-**Use Lovable**
+- **Frontend**: React 18, TypeScript, Tailwind CSS
+- **Build Tool**: Vite
+- **UI Components**: Shadcn/ui, Radix UI
+- **3D Graphics**: Three.js
+- **State Management**: TanStack Query
+- **Routing**: React Router DOM
+- **Form Handling**: React Hook Form + Zod validation
+- **Animations**: Tailwind CSS animations + custom keyframes
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/839b0307-aa28-46d8-ba41-bee9838dcb64) and start prompting.
+## 📁 Project Structure
 
-Changes made via Lovable will be committed automatically to this repo.
+```
+src/
+├── components/          # Reusable UI components
+│   ├── services/       # Service-related components
+│   └── ui/             # Base UI components (Shadcn)
+├── data/               # Static data and configurations
+├── hooks/              # Custom React hooks
+├── pages/              # Page components
+├── types/              # TypeScript type definitions
+├── utils/              # Utility functions
+└── services/           # API and external services
+```
 
-**Use your preferred IDE**
+## 🏃‍♂️ Getting Started
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Prerequisites
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- Node.js 18+ 
+- npm or yarn
 
-Follow these steps:
+### Installation
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+1. Clone the repository:
+```bash
+git clone [repository-url]
+cd nodexstation-portfolio
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+2. Install dependencies:
+```bash
+npm install
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+3. Start the development server:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+4. Open [http://localhost:8080](http://localhost:8080) in your browser.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📦 Available Scripts
 
-**Use GitHub Codespaces**
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🎨 Design System
 
-## What technologies are used for this project?
+The project uses a consistent design system with:
 
-This project is built with:
+- **Color Tokens**: Terminal-inspired color palette
+- **Typography**: Code-style font families
+- **Spacing**: Consistent spacing scale
+- **Animations**: Smooth transitions and effects
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Key Design Tokens
 
-## How can I deploy this project?
+```css
+--terminal-green: hsl(168, 76%, 42%)
+--terminal-blue: hsl(187, 85%, 53%) 
+--terminal-purple: hsl(271, 91%, 65%)
+--terminal-yellow: hsl(54, 100%, 68%)
+```
 
-Simply open [Lovable](https://lovable.dev/projects/839b0307-aa28-46d8-ba41-bee9838dcb64) and click on Share -> Publish.
+## 🔧 Configuration
 
-## Can I connect a custom domain to my Lovable project?
+### Environment Variables
 
-Yes, you can!
+The project doesn't require environment variables for basic functionality, but you may configure:
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- API endpoints for contact forms
+- Analytics tracking IDs
+- External service configurations
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Customization
+
+1. **Colors**: Modify `src/index.css` for color tokens
+2. **Components**: Customize Shadcn components in `src/components/ui/`
+3. **Content**: Update service data in `src/data/servicesData.ts`
+
+## 📱 Features Overview
+
+### Services Section
+- **Interactive Cards**: Hover effects and detailed tooltips
+- **Professional Pricing**: Transparent pricing structure
+- **Technology Stack**: Detailed technology listings
+- **Accessibility**: Full ARIA support and keyboard navigation
+
+### AI Chat Integration
+- **Multiple Providers**: OpenAI, Anthropic, Groq support
+- **Real-time Responses**: Streaming chat interface
+- **Error Handling**: Graceful fallbacks and retry logic
+
+### 3D Visualizations
+- **Three.js Showcase**: Interactive 3D elements
+- **Particle Systems**: Dynamic background animations
+- **Performance Optimized**: Efficient rendering
+
+## 🚀 Deployment
+
+The project is optimized for deployment on:
+
+- **Vercel** (recommended)
+- **Netlify**
+- **GitHub Pages**
+- **Traditional hosting**
+
+### Build Optimization
+
+- Tree shaking for minimal bundle size
+- Code splitting for faster loading
+- Image optimization
+- CSS purging
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📞 Contact
+
+NodeX Station - [nodexstation@gmail.com](mailto:nodexstation@gmail.com)
+
+Project Link: [GitHub Repository URL]
+
+---
+
+Built with ❤️ using React, TypeScript, and modern web technologies.
